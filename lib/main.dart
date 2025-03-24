@@ -20,6 +20,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const ExamplePage(title: 'Example'),
+      //Don't create your page in main.dart
+      //Leave the main as it is right now and create a new file
+      //Change const ExamplePage(title: 'Example') to your page for easier integration
     );
   }
 }
