@@ -1,4 +1,3 @@
-import 'package:caching/example_page.dart';
 import 'package:caching/friends.dart';
 import 'package:caching/friends_provider.dart';
 import 'package:flutter/material.dart';
