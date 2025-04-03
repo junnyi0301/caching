@@ -31,7 +31,7 @@ class _FriendsPageState extends State<FriendsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Friends", style: design.poppins),
+        title: Text("Friends", style: design.titleText),
       ),
       body: Center(
         child: Column(
