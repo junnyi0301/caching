@@ -1,5 +1,8 @@
 import 'package:caching/example_page.dart';
+import 'package:caching/friends.dart';
+import 'package:caching/friends_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
         useMaterial3: true,
       ),
-      home: const ExamplePage(title: 'Example'),
+      home: const FriendsPage()
       //Don't create your page in main.dart
       //Leave the main as it is right now and create a new file
       //Change const ExamplePage(title: 'Example') to your page for easier integration
