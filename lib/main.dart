@@ -1,4 +1,4 @@
-import 'package:caching/example_page.dart';
+import 'package:caching/goal.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,13 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Cachingg',
       theme: ThemeData(
         colorScheme:
             ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
         useMaterial3: true,
       ),
-      home: const ExamplePage(title: ''),
+      home: const Goal(),
     );
   }
 }
