@@ -84,9 +84,20 @@ class _CreateGoalState extends State<CreateGoal> {
                   const SizedBox(height: 20),
 
                   //Goal Name
+                  Text("Goal Name: *", style: design.contentText,),
                   TextFormField(
                     decoration: const InputDecoration(
-                        labelText: 'Goal Name: *'
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      hintText: 'Enter Here.',
+                      border: InputBorder.none,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white, width: 3),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white, width: 3),
+                      ),
                     ),
                     keyboardType: TextInputType.name,
                     controller: goalNameCtrl,
@@ -94,13 +105,14 @@ class _CreateGoalState extends State<CreateGoal> {
                     validator: (value){
                       if(value == null || value.isEmpty){
                         return 'Pleas enter Goal Name.';
-                      }else if(value.length > 30){
-                        return 'Please enter not more than 30 character.';
+                      }else if(value.length > 15){
+                        return 'Please enter not more than 15 character.';
                       }else{
                         return null;
                       }
                     },
                   ),
+
                 ],
               ),
 
