@@ -1,7 +1,7 @@
 import 'package:caching/auth/auth_service.dart';
 import 'package:caching/auth/views/login.dart';
 import 'package:flutter/material.dart';
-import 'package:caching/design.dart';
+import 'package:caching/utilities/design.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});

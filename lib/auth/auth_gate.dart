@@ -1,5 +1,5 @@
 import 'package:caching/auth/views/login.dart';
-import 'package:caching/friends.dart';
+import 'package:caching/chat/views/friends.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

@@ -1,10 +1,9 @@
 import 'package:caching/auth/auth_service.dart';
 import 'package:caching/chat/chat_service.dart';
 import 'package:flutter/material.dart';
-import 'chat/views/chat_page.dart';
-import 'friend_card.dart';
+import 'chat_page.dart';
 import 'user_tile.dart';
-import 'design.dart';
+import '../../utilities/design.dart';
 
 final design = Design();
 

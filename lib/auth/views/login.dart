@@ -1,7 +1,7 @@
 import 'package:caching/auth/auth_service.dart';
 import 'package:caching/auth/views/register.dart';
 import 'package:flutter/material.dart';
-import 'package:caching/design.dart';
+import 'package:caching/utilities/design.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
