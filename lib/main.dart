@@ -1,9 +1,13 @@
+import 'package:caching/auth/views/login.dart';
+import 'package:caching/firebase_options.dart';
 import 'package:caching/friends.dart';
-import 'package:caching/friends_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'auth/auth_gate.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -14,17 +18,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
-        useMaterial3: true,
-      ),
-      home: const FriendsPage()
-      //Don't create your page in main.dart
-      //Leave the main as it is right now and create a new file
-      //Change const ExamplePage(title: 'Example') to your page for easier integration
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
+          useMaterial3: true,
+        ),
+        home: const AuthGate()
+        //Don't create your page in main.dart
+        //Leave the main as it is right now and create a new file
+        //Change const ExamplePage(title: 'Example') to your page for easier integration
+        );
   }
 }

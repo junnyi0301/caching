@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "441844022683",
+    "project_id": "caching-7e0b6",
+    "storage_bucket": "caching-7e0b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441844022683:android:b42815dad6e4406d57753e",
+        "android_client_info": {
+          "package_name": "com.example.caching"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdAde-aWX_soUdGIhOyUk5TWP46xbh8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

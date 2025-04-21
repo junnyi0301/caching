@@ -1,19 +1,10 @@
-import 'package:caching/friends_provider.dart';
-import 'package:caching/user.dart';
+import 'package:caching/auth/auth_service.dart';
+import 'package:caching/chat/chat_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'chat/views/chat_page.dart';
 import 'friend_card.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'user_tile.dart';
 import 'design.dart';
-
-final List<User> userList = [
-  User(1, "Darren", 21),
-  User(2, "Alice", 22),
-  User(3, "Michael", 23),
-  User(4, "Nicholas", 24),
-  User(5, "Katerine", 25),
-  User(6, "Harry", 20),
-];
 
 final design = Design();
 
@@ -25,6 +16,13 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
+  final ChatService _chatService = ChatService();
+  final AuthService _authService = AuthService();
+
+  void logout() {
+    final _auth = AuthService();
+    _auth.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +34,48 @@ class _FriendsPageState extends State<FriendsPage> {
       body: Center(
         child: Column(
           children: [
-            Expanded(
-              child: ListView.separated(itemBuilder: (BuildContext context, int index){
-                return FriendCard(userList: userList, index: index);
-              }, separatorBuilder: (BuildContext context, int index){
-                return Divider();
-              }, itemCount: userList.length),
-            )
+            Expanded(child: _buildUserList()),
+            ElevatedButton(onPressed: logout, child: Text("Logout"))
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUserList() {
+    return StreamBuilder(
+        stream: _chatService.getUsersStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text("Error");
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loading...");
+          }
+
+          if (snapshot.data == null || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No users found"));
+          }
+
+          return ListView(
+            children: snapshot.data!.map<Widget>((userData) => _buildUserListItem(userData, context)).toList(),
+          );
+        });
+  }
+
+  Widget _buildUserListItem(
+      Map<String, dynamic> userData, BuildContext context) {
+    return UserTile(
+      text: userData["email"],
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatPage(
+                      receiverEmail: userData["email"],
+                    )));
+      },
     );
   }
 }
