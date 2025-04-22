@@ -1,5 +1,5 @@
 import 'package:caching/auth/auth_service.dart';
-import 'package:caching/chat/chat_service.dart';
+import 'package:caching/chat/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'chat_page.dart';
 import 'user_tile.dart';
@@ -72,7 +72,7 @@ class _FriendsPageState extends State<FriendsPage> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatPage(
-                      receiverEmail: userData["email"],
+                      receiverEmail: userData["email"],receiverID: userData["uid"],
                     )));
       },
     );
