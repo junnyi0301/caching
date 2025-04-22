@@ -72,7 +72,7 @@ class _FriendsPageState extends State<FriendsPage> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatPage(
-                      receiverEmail: userData["email"],
+                      receiverEmail: userData["email"],receiverID: userData["uid"],
                     )));
       },
     );
