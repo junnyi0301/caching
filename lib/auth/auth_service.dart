@@ -18,7 +18,7 @@ class AuthService{
   }
 
   //Sign up
-  Future<UserCredential> signUpWithEmailPassword(String email, password, String name) async{
+  Future<UserCredential> signUpWithEmailPassword(String email, password, String name, phone) async{
 
     try{
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
@@ -26,7 +26,8 @@ class AuthService{
       _firestore.collection("Users").doc(userCredential.user!.uid).set({
         "uid": userCredential.user!.uid,
         "email": email,
-        "name": name
+        "name": name,
+        "phone" : phone
       });
       return userCredential;
 

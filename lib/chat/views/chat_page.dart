@@ -8,10 +8,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
+  final String receiverName;
   final String receiverEmail;
   final String receiverID;
 
-  ChatPage({super.key, required this.receiverEmail, required this.receiverID});
+  ChatPage({super.key, required this.receiverEmail, required this.receiverID, required this.receiverName});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -65,9 +66,13 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.receiverEmail)),
+      appBar: AppBar(title: Text(widget.receiverName),
+          backgroundColor: Color(0xFFB9D3FB),
+      ),
+      backgroundColor: Color(0xFFE7EEFD),
       body: Column(
         children: [
+          SizedBox(height: 24,),
           //Display messages
           _buildMessageList(),
 
