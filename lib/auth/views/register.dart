@@ -15,12 +15,13 @@ class _RegisterState extends State<Register> {
   final TextEditingController registerEmailCtrl = TextEditingController();
   final TextEditingController registerPasswordCtrl = TextEditingController();
   final TextEditingController registerNameCtrl = TextEditingController();
+  final TextEditingController registerPhoneCtrl = TextEditingController();
 
   void register() async {
     final _auth = AuthService();
 
     try {
-      await _auth.signUpWithEmailPassword(registerEmailCtrl.text, registerPasswordCtrl.text, registerNameCtrl.text);
+      await _auth.signUpWithEmailPassword(registerEmailCtrl.text, registerPasswordCtrl.text, registerNameCtrl.text, registerPhoneCtrl.text);
       Navigator.pop(context);
     } catch (e) {
       showDialog(
@@ -56,6 +57,10 @@ class _RegisterState extends State<Register> {
                 obscureText: true,
                 controller: registerPasswordCtrl,
                 decoration: const InputDecoration(labelText: "Password"),
+              ),
+              TextField(
+                controller: registerPhoneCtrl,
+                decoration: const InputDecoration(labelText: "Phone Number"),
               ),
               ElevatedButton(onPressed: register, child: Text("Register"))
             ],
