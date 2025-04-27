@@ -1,7 +1,10 @@
+import 'package:caching/create_goal.dart';
 import 'package:caching/goal.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -12,14 +15,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Cachingg',
-      theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
-        useMaterial3: true,
-      ),
-      home: const Goal(),
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme:
+          ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
+          useMaterial3: true,
+        ),
+        home: const CreateGoal()
+      //Don't create your page in main.dart
+      //Leave the main as it is right now and create a new file
+      //Change const ExamplePage(title: 'Example') to your page for easier integration
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'design.dart';
 import 'goal.dart';
 
@@ -15,8 +16,11 @@ class _CreateGoalState extends State<CreateGoal> {
   final goalNameCtrl = TextEditingController();
   final goalDescCtrl = TextEditingController();
   final targetAmountCtrl = TextEditingController();
-  final commitmentCtrl = TextEditingController();
-  final monthlyAmountCtrl = TextEditingController();
+
+  final int _commitment = 1;
+  final _commitmentList = ['by Daily Amount', 'by Monthly Amount'];
+
+  final constPayAmountCtrl = TextEditingController(); // can be daily or monthly
   final durationCtrl = TextEditingController();
 
   final _myFocusNode = FocusNode();
@@ -28,24 +32,6 @@ class _CreateGoalState extends State<CreateGoal> {
         backgroundColor: design.primaryColor,
         title: Text("Create Goal", style: design.subtitleText),
         centerTitle: true,
-
-        // leadingWidth: 60,
-        // leading: ElevatedButton.icon(
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: design.secondaryColor,
-        //     elevation: 0,
-        //     padding: const EdgeInsets.all(1),
-        //     minimumSize: const Size(40, 40),
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(8),
-        //     ),
-        //   ),
-        //   icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 18),
-        //   label: const Text(""),
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        // ),
 
         leading: Container(
           margin: const EdgeInsets.all(8),
@@ -67,56 +53,76 @@ class _CreateGoalState extends State<CreateGoal> {
         color: design.secondaryColor,
         padding: const EdgeInsets.fromLTRB(25, 5, 25, 5),
         child: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                color: design.primaryButton,
-                border: Border.all(width: 3, color: Colors.white),
-                borderRadius: BorderRadius.circular(10),
+          child: Column(
+
+            children: [
+              Text('Create Goal', style: design.subtitleText,),
+
+              TextFormField(
+                controller: goalNameCtrl,
+                keyboardType: TextInputType.text,
+                focusNode: _myFocusNode,
+                decoration: const InputDecoration(
+                  labelText: 'Goal Name*'
+                ),
+                validator: (value){
+                  if(value == null || value.isEmpty){
+                    return 'Please enter goal name.';
+                  } else if (value.length > 15){
+                    return 'Please enter within 15 words';
+                  }
+                  return null;
+                },
               ),
 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Center(child: Text("Create Goal", style: design.subtitleText)),
-                  const SizedBox(height: 20),
-
-                  //Goal Name
-                  Text("Goal Name: *", style: design.contentText,),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      hintText: 'Enter Here.',
-                      border: InputBorder.none,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 3),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 3),
-                      ),
-                    ),
-                    keyboardType: TextInputType.name,
-                    controller: goalNameCtrl,
-                    focusNode: _myFocusNode,
-                    validator: (value){
-                      if(value == null || value.isEmpty){
-                        return 'Pleas enter Goal Name.';
-                      }else if(value.length > 15){
-                        return 'Please enter not more than 15 character.';
-                      }else{
-                        return null;
-                      }
-                    },
-                  ),
-
-                ],
+              TextFormField(
+                controller: goalDescCtrl,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                    labelText: 'Goal Description'
+                ),
               ),
 
-            ),
+              TextFormField(
+                controller: targetAmountCtrl,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  labelText: 'Target Amount*',
+                  prefixText: 'RM '
+                ),
+                validator: (value){
+                  if(value == null || value.isEmpty){
+                    return 'Please enter target amount.';
+                  } else {
+                    if (double.parse(value) <= 0){
+                      return 'Target amount should not be negative or 0';
+                    }
+                  }
+                  return null;
+                },
+              ),
+
+              DropdownButtonFormField(
+                value: _commitment,
+                items: _commitmentList.map((int item){
+                  return DropdownMenuItem(  value: item, child: Text('$item'));
+                }).toList(),
+                onChanged: (int? item){
+                  setState(() {
+                    _commitment = item;
+                  });
+                },
+                validator: (value){
+                  if (value == 0){
+                    return 'Please select an option.';
+                  }
+                  return null;
+                },
+                )
+
+            ],
+
           ),
         ),
       )

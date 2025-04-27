@@ -26,20 +26,11 @@ class _GoalState extends State<Goal> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: design.primaryColor,
-                    foregroundColor: Colors.black,
-                    minimumSize: Size.fromHeight(40),
-                    side: BorderSide(color: Colors.black, width: 2)
-                  ),
-                  child: Text("Create Goal", style: design.contentText),
-                  onPressed: (){
-                    Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateGoal()));
-                  },
-                ),
+              ElevatedButton(onPressed: (){
+                Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => CreateGoal())
+                );
+              }, child: Text('Create Goal', style: design.contentText),
               )
             ],
           ),
