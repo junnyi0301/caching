@@ -2,8 +2,8 @@ import 'package:caching/auth/views/login.dart';
 import 'package:caching/utilities/firebase_options.dart';
 import 'package:caching/chat/views/friends.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:caching/create_goal.dart';
-import 'package:caching/goal.dart';
+import 'package:caching/goal/views/create_goal_page.dart';
+import 'package:caching/goal/views/goal_page.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_gate.dart';
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           ColorScheme.fromSeed(seedColor: Color.fromRGBO(231, 238, 253, 1)),
           useMaterial3: true,
         ),
-        home: const CreateGoal()
+        home: const GoalPage()
       //Don't create your page in main.dart
       //Leave the main as it is right now and create a new file
       //Change const ExamplePage(title: 'Example') to your page for easier integration

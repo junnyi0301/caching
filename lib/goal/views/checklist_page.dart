@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'design.dart';
-import 'create_goal.dart';
+import 'package:caching/utilities/design.dart';
+import 'package:caching/goal/views/create_checklist_page.dart';
 
 final design = Design();
-
-class Goal extends StatefulWidget {
-  const Goal({super.key});
+class ChecklistPage extends StatefulWidget {
+  const ChecklistPage({super.key});
 
   @override
-  State<Goal> createState() => _GoalState();
+  State<ChecklistPage> createState() => _ChecklistPageState();
 }
 
-class _GoalState extends State<Goal> {
+class _ChecklistPageState extends State<ChecklistPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: design.primaryColor,
-        title: Text("Goal", style: design.subtitleText),
+        title: Text("Check List", style: design.subtitleText),
         centerTitle: true,
       ),
       body: Center(
@@ -28,7 +28,7 @@ class _GoalState extends State<Goal> {
             children: [
               ElevatedButton(onPressed: (){
                 Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => CreateGoal())
+                    context, MaterialPageRoute(builder: (context) => CreateChecklistPage())
                 );
               }, child: Text('Create Goal', style: design.contentText),
               )
@@ -39,3 +39,4 @@ class _GoalState extends State<Goal> {
     );
   }
 }
+
