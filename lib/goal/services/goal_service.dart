@@ -24,9 +24,10 @@ class GoalService {
 
   Future<String> addNewGoal(String name, String descr, double target, String comm, double pay, int duration) async {
     try {
+      final now = DateTime.now();
 
       Goal newGoal = Goal(
-        goalID: DateTime.now().millisecondsSinceEpoch.toString(),
+        goalID: now.millisecondsSinceEpoch.toString(),
         goalName: name,
         goalDescr: descr,
         targetAmt: target,
@@ -35,8 +36,11 @@ class GoalService {
         duration: duration,
         goalStatus: "Active",
         personInvolve: {
-          //_auth: {"contribution": 0.00}
-          "5YcvQw3al0fqW5CN5B9cZAmGnT52":{"contribution": 0.00}
+          //_auth
+          "5YcvQw3al0fqW5CN5B9cZAmGnT52": {
+            "TotalContribution": 0,
+            now.toString(): {"Contribution": 0.00}
+          }
         },
         ttlSaveAmount: 0
       );
@@ -53,9 +57,12 @@ class GoalService {
 
   Future<void> addUserToGoal(String goalID, String userID) async {
     try {
+      final now = DateTime.now();
+
       await _firestore.collection("goal").doc(goalID).update({
         "PersonInvolve.$userID": {
-          "contribution": 0
+          "TotalContribution": 0,
+          now.toString():{"Contribution": 0.00}
         }
       });
       print("User $userID added to goal $goalID");
@@ -71,6 +78,7 @@ class GoalService {
           .collection("goal")
           //.where("PersonInvolve.${_auth}", isGreaterThanOrEqualTo: {}
           .where("PersonInvolve.${"5YcvQw3al0fqW5CN5B9cZAmGnT52"}", isGreaterThanOrEqualTo: {})
+          .where("GoalStatus", isEqualTo: "Active")
           .get();
 
       return snapshot.docs.map((doc) => doc.data()).toList();
@@ -80,27 +88,45 @@ class GoalService {
     }
   }
 
-  Future<void> updateContri(String goalID, String userID, double contribution) async {
+  Future<void> updateContri(String goalID, double contribution) async {
     try {
       DocumentSnapshot goalSnapshot = await _firestore.collection("goal").doc(goalID).get();
 
       if (goalSnapshot.exists) {
+        String _currentDate = DateTime.now().toString();
+
         Map<String, dynamic> goalData = goalSnapshot.data() as Map<String, dynamic>;
         double ttlSaving = (goalData["TotalSaveAmount"]).toDouble();
-        double currentContribution = (goalData["PersonInvolve"][userID]["contribution"] ?? 0.00).toDouble();
+        double ttlContribution = (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"]["TotalContribution"]).toDouble(); //_auth
 
-        double newTtlSaving = ttlSaving + contribution;
-        double newContribution = currentContribution + contribution;
+        if (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate] != null){
+          double currentContribution = (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate]["contribution"] ?? 0.00).toDouble();
+          currentContribution += contribution;
+          await _firestore.collection("goal").doc(goalID).update({
+            "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.$_currentDate.Contribution": currentContribution,
+          });
+        }else{
+          await _firestore.collection("goal").doc(goalID).update({
+          "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.$_currentDate": {"Contribution": contribution},
+          });
+        }
+
+        ttlContribution += contribution;
+        ttlSaving += contribution;
 
         await _firestore.collection("goal").doc(goalID).update({
-          "TotalSaveAmount": newTtlSaving,
+          "TotalSaveAmount": ttlSaving,
         });
         await _firestore.collection("goal").doc(goalID).update({
-          "PersonInvolve.$userID.contribution": newContribution,
+          "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.TotalContribution": ttlContribution,
         });
-        print("Contribution updated for user $userID in goal $goalID");
+
+        print("Contribution updated for user 5YcvQw3al0fqW5CN5B9cZAmGnT52 in goal $goalID");
+
       } else {
+
         print("Goal $goalID not found.");
+
       }
     } catch (e) {
       print("Error in updateContribution: $e");
