@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:caching/utilities/design.dart';
-import 'package:caching/goal/services/checklist_service.dart';
+import 'package:caching/checklist/services/checklist_service.dart';
 
 final design = Design();
 

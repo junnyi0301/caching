@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
-import 'package:caching/goal/views/create_checklist_page.dart';
+import 'package:caching/checklist/views/create_checklist_page.dart';
 
 final design = Design();
 class ChecklistPage extends StatefulWidget {

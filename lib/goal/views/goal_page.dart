@@ -26,6 +26,7 @@ class _GoalState extends State<GoalPage> {
 
   void loadGoals() async {
     allGoals = await _goalService.getAllGoals();
+    //print("Got goals: $allGoals");
     setState(() {});
   }
 
@@ -43,39 +44,62 @@ class _GoalState extends State<GoalPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateGoalPage()),
-                  ).then((_) {
-                    loadGoals;
-                  });
-                },
-                child: Text('Create Goal', style: design.contentText),
+              SizedBox(
+                width: 290,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "create", goalID: "")),
+                    ).then((_) {
+                      loadGoals();
+                    });
+                  },
+                  child: Text('Create Goal', style: design.contentText),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: design.primaryColor,
+                    foregroundColor: Colors.black,
+                    side: BorderSide(
+                      color: Colors.black,
+                      width: 2,
+
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
+
               SizedBox(height: 20),
+
               allGoals.isEmpty
                   ? Text("Create a Goal now.", style: design.contentText)
                   : Expanded(
-                child: ListView.builder(
-                  itemCount: allGoals.length,
-                  itemBuilder: (context, index) {
-                    var goal = allGoals[index];
-                    return GoalBlock(
-                      goalID: goal['GoalID'],
-                      goalName: goal['GoalName'],
-                      goalDescription: goal['GoalDescription'],
-                      targetAmt: goal['TargetAmount'],
-                      commitment: goal['Commitment'],
-                      payAmt: goal['PayAmount'],
-                      duration: goal['Duration'],
-                      personInvolve: goal['PersonInvolve'],
-                      ttlSaveAmount: goal['TotalSaveAmount']
-                    );
-                  },
+                child: Container(
+                  width: double.infinity, // Make ListView take the full width
+                  child: ListView.builder(
+                    itemCount: allGoals.length,
+                    itemBuilder: (context, index) {
+                      var goal = allGoals[index];
+                      return GoalBlock(
+                        goalID: goal['GoalID'] ?? ' ',
+                        goalName: goal['GoalName'] ?? ' ',
+                        goalDescr: goal['GoalDescription'] ?? ' ',
+                        targetAmt: goal['TargetAmount'] ?? 0.00,
+                        commitment: goal['Commitment'] ?? ' ',
+                        payAmt: goal['PayAmount'] ?? 0.00,
+                        duration: goal['Duration'] ?? 0.00,
+                        personInvolve: goal['PersonInvolve'] ?? {},
+                        ttlSaveAmount: goal['TotalSaveAmount'] ?? 0.00,
+                        reload: () => loadGoals(),
+                      );
+                    },
+                  ),
                 ),
               ),
+
             ],
           ),
         ),
