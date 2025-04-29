@@ -167,7 +167,6 @@ class _FriendsPageState extends State<FriendsPage> {
                 itemBuilder: (context, index) {
                   var data = snapshot.data!.docs[index].data();
                   bool isAlreadyFriends = myFriends.contains(data["uid"]);
-                  print(isAlreadyFriends);
                   return AddFriendTile(isFriend: isAlreadyFriends, name: data["name"], onTap: () => addFriend(data["uid"]));
                 });
           });

@@ -102,25 +102,6 @@ class _CreateGoalState extends State<CreateGoal> {
                   return null;
                 },
               ),
-
-              DropdownButtonFormField(
-                value: _commitment,
-                items: _commitmentList.map((int item){
-                  return DropdownMenuItem(  value: item, child: Text('$item'));
-                }).toList(),
-                onChanged: (int? item){
-                  setState(() {
-                    _commitment = item;
-                  });
-                },
-                validator: (value){
-                  if (value == 0){
-                    return 'Please select an option.';
-                  }
-                  return null;
-                },
-                )
-
             ],
 
           ),
