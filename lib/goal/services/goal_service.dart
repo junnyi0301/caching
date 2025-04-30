@@ -10,9 +10,10 @@ class GoalService {
   //All friend in friend list
   Future<List<Map<String, dynamic>>> getAllFriends() async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
       final snapshot = await _firestore
           .collection("friendsList")
-          .doc("5YcvQw3al0fqW5CN5B9cZAmGnT52") // _auth
+          .doc(currentUserID)
           .collection("friends")
           .where("status", isEqualTo: "accepted")
           .get();
@@ -29,18 +30,48 @@ class GoalService {
     }
   }
 
-  //All goal a person involve
-  Future<List<Map<String, dynamic>>> getAllGoals() async{
+  //All active goal current user involved
+  Future<List<Map<String, dynamic>>> getActiveGoals() async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
+
       final snapshot = await _firestore
           .collection("goal")
-      //.where("PersonInvolve.${_auth}", isGreaterThanOrEqualTo: {}
-          .where("PersonInvolve.${"5YcvQw3al0fqW5CN5B9cZAmGnT52"}", isGreaterThanOrEqualTo: {})
           .where("GoalStatus", isEqualTo: "Active")
           .get();
-      return snapshot.docs.map((doc) => doc.data()).toList();
+
+      final userGoals = snapshot.docs.where((doc) {
+        final data = doc.data();
+        final personMap = data["PersonInvolve"] as Map<String, dynamic>?;
+        return personMap?.containsKey(currentUserID) ?? false;
+      }).map((doc) => doc.data()).toList();
+
+      return userGoals;
     } catch (e) {
-      print("Error in getAllGoals: $e");
+      print("Error in getActiveGoals: $e");
+      return [];
+    }
+  }
+
+  //All completed goal current user involved
+  Future<List<Map<String, dynamic>>> getCompletedGoals() async {
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      final snapshot = await _firestore
+          .collection("goal")
+          .where("GoalStatus", isEqualTo: "Completed")
+          .get();
+
+      final userGoals = snapshot.docs.where((doc) {
+        final data = doc.data();
+        final personMap = data["PersonInvolve"] as Map<String, dynamic>?;
+        return personMap?.containsKey(currentUserID) ?? false;
+      }).map((doc) => doc.data()).toList();
+
+      return userGoals;
+    } catch (e) {
+      print("Error in getCompletedGoals: $e");
       return [];
     }
   }
@@ -55,6 +86,7 @@ class GoalService {
   //All uid contribute in one goal
   Future<List<String>> getAllMemberContributionID(String goalID) async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
       DocumentSnapshot goalSnapshot = await _firestore.collection("goal").doc(goalID).get();
 
       if (goalSnapshot.exists) {
@@ -62,7 +94,7 @@ class GoalService {
         Map<String, dynamic> personInvolve = goalData["PersonInvolve"];
 
         List<String> memberID = personInvolve.keys.toList();
-        memberID.remove("5YcvQw3al0fqW5CN5B9cZAmGnT52");
+        memberID.remove(currentUserID);
 
         return memberID;
       } else {
@@ -128,9 +160,9 @@ class GoalService {
     }
   }
 
-
   Future<double> getDailyContribution(String goalID) async{
     try {
+      String currentUserID = _auth.currentUser!.uid;
       double dailyContribution = 0.0;
       String _currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -139,9 +171,9 @@ class GoalService {
       if (goalSnapshot.exists){
         Map<String, dynamic> goalData = goalSnapshot.data() as Map<String, dynamic>;
 
-        if (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate] != null){
+        if (goalData["PersonInvolve"][currentUserID][_currentDate] != null){
 
-          dailyContribution = (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate]["Contribution"] ?? 0.00).toDouble();
+          dailyContribution = (goalData["PersonInvolve"][currentUserID][_currentDate]["Contribution"] ?? 0.00).toDouble();
 
         }
 
@@ -159,6 +191,7 @@ class GoalService {
 
   Future<double> getMonthlyContribution(String goalID) async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
       double monthlyContribution = 0.00;
       final now = DateTime.now();
       final currentYear = now.year;
@@ -169,7 +202,7 @@ class GoalService {
       if (goalSnapshot.exists) {
         Map<String, dynamic> goalData = goalSnapshot.data() as Map<String, dynamic>;
 
-        Map<String, dynamic> userContributions = goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"];
+        Map<String, dynamic> userContributions = goalData["PersonInvolve"][currentUserID];
 
         userContributions.forEach((key, value) {
           if (key == "TotalContribution") return;
@@ -217,6 +250,7 @@ class GoalService {
 
   Future<String> addNewGoal(String name, String descr, double target, String comm, double pay, int duration) async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
       final now = DateTime.now();
       final currentDate = DateFormat('yyyy-MM-dd').format(now);
 
@@ -230,8 +264,7 @@ class GoalService {
         duration: duration,
         goalStatus: "Active",
         personInvolve: {
-          //_auth
-          "5YcvQw3al0fqW5CN5B9cZAmGnT52": {
+          currentUserID: {
             "TotalContribution": 0,
             currentDate.toString(): {
               "Contribution": 0.00
@@ -272,6 +305,7 @@ class GoalService {
 
   Future<void> updateContribution(String goalID, double contribution) async {
     try {
+      String currentUserID = _auth.currentUser!.uid;
       DocumentSnapshot goalSnapshot = await _firestore.collection("goal").doc(goalID).get();
 
       if (goalSnapshot.exists) {
@@ -279,18 +313,18 @@ class GoalService {
 
         Map<String, dynamic> goalData = goalSnapshot.data() as Map<String, dynamic>;
         double ttlSaving = (goalData["TotalSaveAmount"]).toDouble();
-        double ttlContribution = (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"]["TotalContribution"]).toDouble();
+        double ttlContribution = (goalData["PersonInvolve"][currentUserID]["TotalContribution"]).toDouble();
 
-        if (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate] != null) {
-          double currentContribution = (goalData["PersonInvolve"]["5YcvQw3al0fqW5CN5B9cZAmGnT52"][_currentDate]["Contribution"] ?? 0.00).toDouble();
+        if (goalData["PersonInvolve"][currentUserID][_currentDate] != null) {
+          double currentContribution = (goalData["PersonInvolve"][currentUserID][_currentDate]["Contribution"] ?? 0.00).toDouble();
           currentContribution += contribution;
 
           await _firestore.collection("goal").doc(goalID).update({
-            "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.$_currentDate.Contribution": currentContribution,
+            "PersonInvolve.$currentUserID.$_currentDate.Contribution": currentContribution,
           });
         } else {
           await _firestore.collection("goal").doc(goalID).update({
-            "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.$_currentDate": {"Contribution": contribution},
+            "PersonInvolve.$currentUserID.$_currentDate": {"Contribution": contribution},
           });
         }
 
@@ -301,10 +335,10 @@ class GoalService {
           "TotalSaveAmount": ttlSaving,
         });
         await _firestore.collection("goal").doc(goalID).update({
-          "PersonInvolve.5YcvQw3al0fqW5CN5B9cZAmGnT52.TotalContribution": ttlContribution,
+          "PersonInvolve.$currentUserID.TotalContribution": ttlContribution,
         });
 
-        print("Contribution updated for user 5YcvQw3al0fqW5CN5B9cZAmGnT52 in goal $goalID");
+        print("Contribution updated for user $currentUserID in goal $goalID");
 
       } else {
         print("Goal $goalID not found.");
@@ -382,27 +416,40 @@ class GoalService {
   //Handle add or remove person involve
   Future<void> updateGoalMembers(String goalID, List<String> newSelectedUserIDs) async {
     try {
-      // Fetch the existing goal
+      String currentUserID = _auth.currentUser!.uid;
       DocumentSnapshot goalSnapshot = await _firestore.collection("goal").doc(goalID).get();
 
       if (goalSnapshot.exists) {
 
+        Map<String, dynamic> goalData = goalSnapshot.data() as Map<String, dynamic>;
         List<String> existingUserID = await getAllMemberContributionID(goalID);
+        bool consistRem = false;
 
         // Check for users to REMOVE
         for (String existingUserID in existingUserID) {
-          if (existingUserID == "5YcvQw3al0fqW5CN5B9cZAmGnT52") continue;
+          if (existingUserID == currentUserID) continue;
 
           if (!newSelectedUserIDs.contains(existingUserID)) {
             await remGoalFriend(goalID, existingUserID);
+            consistRem = true;
           }
         }
 
         // Check for users to ADD
         for (String newUserID in newSelectedUserIDs) {
-          if (newUserID == "5YcvQw3al0fqW5CN5B9cZAmGnT52") continue;
+          if (newUserID == currentUserID) continue;
           if (!existingUserID.contains(newUserID)) {
             await addUserToGoal(goalID, newUserID);
+          }
+        }
+
+        // Check if is complete, is it still complete after remove person
+        if(consistRem == true && goalData["GoalStatus"]=="Completed"){
+          DocumentSnapshot updatedGoalSnapshot = await _firestore.collection("goal").doc(goalID).get();
+          Map<String, dynamic> updatedGoalData = updatedGoalSnapshot.data() as Map<String, dynamic>;
+
+          if(updatedGoalData["TotalSaveAmount"] < updatedGoalData["TargetAmount"]){
+            updateGoalStatus(goalID, "Active");
           }
         }
 

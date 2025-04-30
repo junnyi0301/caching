@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
+import 'package:caching/auth/auth_service.dart';
 import 'package:caching/checklist/views/create_checklist_page.dart';
+import 'package:caching/checklist/services/checklist_service.dart';
+import 'checklist_block.dart';
 
 final design = Design();
+
 class ChecklistPage extends StatefulWidget {
   const ChecklistPage({super.key});
 
@@ -11,13 +15,34 @@ class ChecklistPage extends StatefulWidget {
 }
 
 class _ChecklistPageState extends State<ChecklistPage> {
+  final AuthService _authService = AuthService();
+  final ChecklistService _checklistService = ChecklistService();
+
+  List<Map<String, dynamic>> allChecklist = [];
+
+  @override
+  void initState(){
+    super.initState();
+    loadChecklist();
+  }
+
+  void logout() {
+    _authService.signOut();
+  }
+
+  void loadChecklist() async{
+    allChecklist = await _checklistService.getAllChecklist();
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: design.primaryColor,
-        title: Text("Check List", style: design.subtitleText),
+        title: Text("Checklist", style: design.subtitleText),
         centerTitle: true,
       ),
       body: Center(
@@ -26,12 +51,64 @@ class _ChecklistPageState extends State<ChecklistPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              SizedBox(
+                width: 290,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateChecklistPage(checklistType: "create", checklistID: " "),
+                      ),
+                    ).then((_) {
+                      //loadChecklists();
+                    });
+                  },
+                  child: Text('Create New Checklist', style: design.contentText),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: design.primaryColor,
+                    foregroundColor: Colors.black,
+                    side: BorderSide(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              Text("Your Checklist", style: design.contentText),
+              allChecklist.isEmpty
+                ? Text("Create a checklist now.")
+                : Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    child: ListView.builder(
+                      itemCount: allChecklist.length,
+                      itemBuilder: (context, index){
+                        var checklist = allChecklist[index];
+                        return ChecklistBlock(
+                            checklistID: checklist["ChecklistID"],
+                            checklistTitle: checklist["ChecklistTitle"],
+                            checklistStatus: checklist["ChecklistStatus"],
+                            itemList: checklist["ItemList"] ?? {},
+                            reload: () => loadChecklist()
+                        );
+                      },
+                    ),
+                  )
+              ),
+
               ElevatedButton(onPressed: (){
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => CreateChecklistPage())
-                );
-              }, child: Text('Create Goal', style: design.contentText),
-              )
+
+                logout();
+
+              }, child: Text("Logout"))
             ],
           ),
         ),

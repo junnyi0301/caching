@@ -19,6 +19,7 @@ class GoalBlock extends StatelessWidget {
   final Map<String, dynamic> personInvolve;
   final double ttlSaveAmount;
   final void Function()? reload;
+  final String status;
 
   const GoalBlock({
     super.key,
@@ -31,13 +32,14 @@ class GoalBlock extends StatelessWidget {
     required this.duration,
     required this.personInvolve,
     required this.ttlSaveAmount,
-    required this.reload
+    required this.reload,
+    required this.status
   });
 
   @override
   Widget build(BuildContext context) {
-    //final FirebaseAuth _auth = FirebaseAuth.instance;
-    //final String currentUserID = _auth.currentUser!.uid;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final String currentUserID = _auth.currentUser!.uid;
 
     double progress = (ttlSaveAmount / targetAmt).clamp(0.0, 1.0);
     double progressPercent = progress * 100;
@@ -56,6 +58,10 @@ class GoalBlock extends StatelessWidget {
 
     void topUpGoal() async {
       await _goalService.updateContribution(goalID, double.parse(topUpCtrl.text));
+      double currentTotal = ttlSaveAmount + double.parse(topUpCtrl.text);
+      if(currentTotal >= targetAmt){
+        await _goalService.updateGoalStatus(goalID, "Completed");
+      }
       reloadPage();
     }
 
@@ -166,7 +172,7 @@ class GoalBlock extends StatelessWidget {
     return Card(
       margin: EdgeInsets.all(10),
       elevation: 5,
-      color: design.primaryButton,
+      color: status == "Active"? design.primaryButton: Color(0xFFD9D9D9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -177,7 +183,7 @@ class GoalBlock extends StatelessWidget {
                 Text(goalName, style: design.subtitleText),
 
                 SizedBox(height: 5),
-                Divider(color: Colors.orange),
+                Divider(color: status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 Text("Goal Amount:", style: design.contentText),
@@ -238,7 +244,7 @@ class GoalBlock extends StatelessWidget {
                 _contributionList(),
 
                 SizedBox(height: 5),
-                Divider(color: Colors.orange),
+                Divider(color: status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 // Your Own Contribution
@@ -266,13 +272,13 @@ class GoalBlock extends StatelessWidget {
                 Text(type, style: design.contentText,),
 
                 SizedBox(height: 5),
-                Divider(color: Colors.orange),
+                Divider(color: status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 // Example of total contribution (optional)
                 Text("Total Contribute", style: design.contentText),
                 Text(
-                  "RM ${(personInvolve["5YcvQw3al0fqW5CN5B9cZAmGnT52"]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
+                  "RM ${(personInvolve[currentUserID]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
                   style: design.contentText,
                 ),
 
@@ -376,15 +382,20 @@ class GoalBlock extends StatelessWidget {
                                 textAlign: TextAlign.start,
                               ),
                           ),
-                          // Percentage Contribution - Takes up 30% of the row
                           Expanded(
                             flex: 3,
                             child:
-                              Text(
-                                "${((totalContribution / targetAmt) * 100).toStringAsFixed(0)} %",
-                                style: design.contentText,
-                                textAlign: TextAlign.end,
-                              ),
+                              status == "Active"
+                                  ?Text(
+                                    "${((totalContribution / targetAmt) * 100).toStringAsFixed(0)} %",
+                                    style: design.contentText,
+                                    textAlign: TextAlign.end,
+                                  )
+                                  :Text(
+                                    "${((totalContribution / ttlSaveAmount) * 100).toStringAsFixed(0)} %",
+                                    style: design.contentText,
+                                    textAlign: TextAlign.end,
+                                  ),
                           ),
                         ],
                       ),

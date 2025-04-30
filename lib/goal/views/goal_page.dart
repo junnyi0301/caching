@@ -3,6 +3,7 @@ import 'package:caching/utilities/design.dart';
 import 'package:caching/goal/services/goal_service.dart';
 import 'create_goal_page.dart';
 import 'goal_block.dart';
+import 'package:caching/auth/auth_service.dart';
 
 final design = Design();
 
@@ -15,8 +16,10 @@ class GoalPage extends StatefulWidget {
 
 class _GoalState extends State<GoalPage> {
   final GoalService _goalService = GoalService();
+  final AuthService _authService = AuthService();
 
-  List<Map<String, dynamic>> allGoals = []; // Get all goals from Firebase
+  List<Map<String, dynamic>> activeGoal = [];
+  List<Map<String, dynamic>> completeGoal = [];
 
   @override
   void initState() {
@@ -24,10 +27,16 @@ class _GoalState extends State<GoalPage> {
     loadGoals();
   }
 
+  void logout() {
+    _authService.signOut();
+  }
+
   void loadGoals() async {
-    allGoals = await _goalService.getAllGoals();
-    //print("Got goals: $allGoals");
-    setState(() {});
+    activeGoal = await _goalService.getActiveGoals();
+    completeGoal = await _goalService.getCompletedGoals();
+    setState(() {
+
+    });
   }
 
   @override
@@ -50,7 +59,12 @@ class _GoalState extends State<GoalPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "create", goalID: "")),
+                      MaterialPageRoute(
+                        builder: (context) => CreateGoalPage(
+                          goalType: "create",
+                          goalID: "",
+                        ),
+                      ),
                     ).then((_) {
                       loadGoals();
                     });
@@ -62,7 +76,6 @@ class _GoalState extends State<GoalPage> {
                     side: BorderSide(
                       color: Colors.black,
                       width: 2,
-
                     ),
                     padding: EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
@@ -71,19 +84,14 @@ class _GoalState extends State<GoalPage> {
                   ),
                 ),
               ),
-
               SizedBox(height: 20),
-
-              allGoals.isEmpty
+              activeGoal.isEmpty
                   ? Text("Create a Goal now.", style: design.contentText)
                   : Expanded(
-                child: Container(
-                  width: double.infinity, // Make ListView take the full width
-                  child: ListView.builder(
-                    itemCount: allGoals.length,
-                    itemBuilder: (context, index) {
-                      var goal = allGoals[index];
-                      return GoalBlock(
+                child: ListView(
+                  children: [
+                    if (activeGoal.isNotEmpty)
+                      ...activeGoal.map((goal) => GoalBlock(
                         goalID: goal['GoalID'] ?? ' ',
                         goalName: goal['GoalName'] ?? ' ',
                         goalDescr: goal['GoalDescription'] ?? ' ',
@@ -94,12 +102,29 @@ class _GoalState extends State<GoalPage> {
                         personInvolve: goal['PersonInvolve'] ?? {},
                         ttlSaveAmount: goal['TotalSaveAmount'] ?? 0.00,
                         reload: () => loadGoals(),
-                      );
-                    },
-                  ),
+                        status: goal['GoalStatus'],
+                      )),
+                    if (completeGoal.isNotEmpty) ...[
+                      ...completeGoal.map((goal) => GoalBlock(
+                        goalID: goal['GoalID'] ?? ' ',
+                        goalName: goal['GoalName'] ?? ' ',
+                        goalDescr: goal['GoalDescription'] ?? ' ',
+                        targetAmt: goal['TargetAmount'] ?? 0.00,
+                        commitment: goal['Commitment'] ?? ' ',
+                        payAmt: goal['PayAmount'] ?? 0.00,
+                        duration: goal['Duration'] ?? 0.00,
+                        personInvolve: goal['PersonInvolve'] ?? {},
+                        ttlSaveAmount: goal['TotalSaveAmount'] ?? 0.00,
+                        reload: () => loadGoals(),
+                        status: goal['GoalStatus'],
+                      )),
+                    ],
+                  ],
                 ),
               ),
-
+              ElevatedButton(onPressed: (){
+                logout();
+              }, child: Text("Log Out"))
             ],
           ),
         ),

@@ -1,9 +1,11 @@
+import 'package:caching/goal/views/goal_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/goal/services/goal_service.dart';
 
 final design = Design();
+final GoalService _goalService = GoalService();
 
 class CreateGoalPage extends StatefulWidget {
   final String goalType;
@@ -20,7 +22,6 @@ class CreateGoalPage extends StatefulWidget {
 }
 
 class _CreateGoalPageState extends State<CreateGoalPage> {
-  final GoalService _goalService = GoalService();
 
   final goalNameCtrl = TextEditingController();
   final goalDescCtrl = TextEditingController();
@@ -29,6 +30,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   final friendSearchCtrl = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  final _focusNode = FocusNode();
 
   String? _commitment = 'by Daily Amount';
   final _commitmentList = ['by Daily Amount', 'by Monthly Amount'];
@@ -156,6 +158,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
                   TextFormField(
                     controller: goalNameCtrl,
+                    focusNode: _focusNode,
                     decoration: const InputDecoration(labelText: 'Goal Name*'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -307,10 +310,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     },
                   ),
 
+                  widget.goalType == "create"? Text(" "): Text("Please note that the contributions of a removed member will also be deleted."),
+
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        List<String> selectedFriendIDs = selectedFriends.map((friend) => friend['uid'] as String).toList();
+                        List<String> selectedFriendID = selectedFriends.map((friend) => friend['uid'] as String).toList();
 
                         if (widget.goalType == "create") {
                           addGoal(
@@ -320,17 +325,18 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             _commitment!,
                             double.parse(constPayAmountCtrl.text),
                             _duration.toInt(),
-                            selectedFriendIDs
+                            selectedFriendID
                           );
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Goal Created Successfully')),
                           );
+
                         } else {
                           editGoal(
                             goalNameCtrl.text,
                             goalDescCtrl.text,
-                            selectedFriendIDs
+                            selectedFriendID
                           );
 
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -338,7 +344,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           );
                         }
 
-                        Navigator.pop(context);
+                        Navigator.pushReplacement<void, void>(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => const GoalPage(),
+                          ),
+                        );
                       }
                     },
                     child: Text(widget.goalType == "create" ? "Create Goal" : "Save"),

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService{
 
-  //Instance od auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

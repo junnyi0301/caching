@@ -3,14 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Checklist {
   final String checklistID;
   final String checkListTitle;
-  final String checklistDate;
+  final String checklistRemindDate;
   final String checkListStatus;
+  final Map<String, dynamic> itemList;
 
   Checklist({
     required this.checklistID,
     required this.checkListTitle,
-    required this.checklistDate,
-    required this.checkListStatus
+    required this.checklistRemindDate,
+    required this.checkListStatus,
+    required this.itemList
   });
 
     //Convert to a map
@@ -18,8 +20,9 @@ class Checklist {
     return{
       "ChecklistID" : checklistID,
       "ChecklistTitle" : checkListTitle,
-      "ChecklistDate" : checklistDate,
-      "ChecklistStatus" : checkListStatus
+      "ChecklistDate" : checklistRemindDate,
+      "ChecklistStatus" : checkListStatus,
+      "ItemList": itemList.map((key, item) => MapEntry(key, item.toMap()))
     };
   }
 }
