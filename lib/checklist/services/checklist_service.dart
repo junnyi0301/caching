@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:caching/checklist/model/checklist.dart';
 import 'package:caching/checklist/model/checklistItem.dart';
+import 'package:caching/utilities/noti_service.dart';
 
 class ChecklistService{
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -386,6 +387,26 @@ class ChecklistService{
 
     } catch (e) {
       print("Error in updateItem: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> updateChecklistReminder(String checklistID) async {
+    try {
+      final checklistData = await getSpecificChecklist(checklistID);
+      final notiService = NotiService();
+
+      if (checklistData["ChecklistDate"]?.isNotEmpty ?? false) {
+        await notiService.scheduleChecklistNotification(
+          checklistId: checklistID,
+          title: checklistData["ChecklistTitle"],
+          dateString: checklistData["ChecklistDate"],
+        );
+      } else {
+        await notiService.cancelChecklistNotification(checklistID);
+      }
+    } catch (e) {
+      debugPrint('Error updating reminder: $e');
       rethrow;
     }
   }

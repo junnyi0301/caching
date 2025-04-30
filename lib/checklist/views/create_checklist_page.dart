@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
 import 'package:intl/intl.dart';
+import 'package:caching/utilities/noti_service.dart';
 
 final design = Design();
 final ChecklistService _checkListService = ChecklistService();
+final NotiService _notiService = NotiService();
 
 class CreateChecklistPage extends StatefulWidget {
   final String checklistType;
@@ -49,10 +51,11 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
   Future<void> _selectDate() async {
     final today = DateTime.now();
+    final tomorrow = DateTime(today.year, today.month, today.day + 1);
     final DateTime? _picked = await showDatePicker(
       context: context,
-      initialDate: today,
-      firstDate: today,
+      initialDate: tomorrow,
+      firstDate: tomorrow,
       lastDate: DateTime(today.year + 10),
     );
 
@@ -105,6 +108,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
     }
 
+    await _checkListService.updateChecklistReminder(checklistID);
     await waitFunc(checklistID);
 
   }
@@ -139,7 +143,6 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
     await _checkListService.updateChecklistTitle(widget.checklistID, checklistTitleCtrl.text);
 
     if(_reminder == 1){
-      print("run reminder 1");
       await _checkListService.updateChecklistDate(widget.checklistID, checklistReminderDateCtrl.text);
     }else{
       await _checkListService.updateChecklistDate(widget.checklistID, "");
@@ -148,6 +151,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
     for(int i = 0; i < itemCtrl.length; i ++){
       item.add(itemCtrl[i].text);
     }
+    await _checkListService.updateChecklistReminder(widget.checklistID);
     await _checkListService.updateItem(widget.checklistID, item);
   }
 
@@ -328,6 +332,19 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                                   );
                                   return;
                                 }
+
+                                if (_reminder == 1) {
+                                  print("Run Notification");
+
+                                  final int id = checklistTitleCtrl.text.hashCode;
+
+                                  await NotiService().showNotification(
+                                    id: id,
+                                    title: "Cachingg Checklist Reminder",
+                                    body: "You had set a reminder on ${checklistReminderDateCtrl.text}. Click to check more.",
+                                  );
+                                }
+
 
                                 if (widget.checklistType == "create") {
 

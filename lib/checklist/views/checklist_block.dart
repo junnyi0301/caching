@@ -97,12 +97,15 @@ class _ChecklistBlockState extends State<ChecklistBlock> {
 
     void changeDate() async{
       final today = DateTime.now();
+      final tomorrow = DateTime(today.year, today.month, today.day + 1);
       final DateTime? _picked = await showDatePicker(
         context: context,
-        initialDate: today,
-        firstDate: today,
+        initialDate: tomorrow,
+        firstDate: tomorrow,
         lastDate: DateTime(today.year + 10),
       );
+
+      await _checklistService.updateChecklistReminder(widget.checklistID);
 
       if (_picked != null) {
         String formattedDate = DateFormat('yyyy-MM-dd').format(_picked);

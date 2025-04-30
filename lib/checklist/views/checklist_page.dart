@@ -4,6 +4,7 @@ import 'package:caching/auth/auth_service.dart';
 import 'package:caching/checklist/views/create_checklist_page.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
 import 'checklist_block.dart';
+import 'package:caching/utilities/noti_service.dart';
 
 final design = Design();
 
@@ -17,6 +18,7 @@ class ChecklistPage extends StatefulWidget {
 class _ChecklistPageState extends State<ChecklistPage> {
   final AuthService _authService = AuthService();
   final ChecklistService _checklistService = ChecklistService();
+  final notiService = NotiService();
 
   List<Map<String, dynamic>> allChecklist = [];
 
@@ -35,6 +37,10 @@ class _ChecklistPageState extends State<ChecklistPage> {
     setState(() {
 
     });
+  }
+
+  void trying() async{
+    await NotiService().scheduleTestNotification();
   }
 
   @override
@@ -109,7 +115,29 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
                 logout();
 
-              }, child: Text("Logout"))
+              }, child: Text("Logout")),
+
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await NotiService().scheduleNotification(
+                      title: "Reminder",
+                      body: "Don't forget your task!",
+                      hour: 6,
+                      minute: 03,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Notification scheduled successfully')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${e.toString()}')),
+                    );
+                  }
+                  await NotiService().debugPrintPendingNotifications();
+                },
+                child: Text("Schedule Notification"),
+              )
             ],
           ),
         ),

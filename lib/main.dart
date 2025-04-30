@@ -2,15 +2,24 @@ import 'package:caching/auth/views/login.dart';
 import 'package:caching/checklist/views/checklist_page.dart';
 import 'package:caching/utilities/firebase_options.dart';
 import 'package:caching/chat/views/friends.dart';
+import 'package:caching/utilities/noti_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:caching/goal/views/create_goal_page.dart';
 import 'package:caching/goal/views/goal_page.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_gate.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // init notifications
+  NotiService().initNotification();
+
+  // init firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const MyApp());
 }
 
@@ -21,6 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
