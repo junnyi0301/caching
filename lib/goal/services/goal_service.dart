@@ -78,9 +78,15 @@ class GoalService {
 
   //A specific goal data
   Future<Map<String, dynamic>> getGoalData(String goalID) async {
-    final snapshot = await _firestore.collection("goal").doc(goalID).get();
+    try {
 
-    return snapshot.data() as Map<String, dynamic>;
+      final snapshot = await _firestore.collection("goal").doc(goalID).get();
+
+      return snapshot.data() as Map<String, dynamic>;
+    } catch (e) {
+      print("Error in getSpecificChecklist: $e");
+      return {};
+    }
   }
 
   //All uid contribute in one goal
@@ -402,8 +408,9 @@ class GoalService {
 
         await _firestore.collection("goal").doc(goalID).update({
           "TotalSaveAmount": ttlSaving,
-          "PersonInvolve.$friendID": FieldValue.delete(), // <--- THIS IS THE CORRECT WAY
+          "PersonInvolve.$friendID": FieldValue.delete(),
         });
+
       } else {
         print("Goal $goalID not found.");
       }
@@ -475,8 +482,32 @@ class GoalService {
         print("Goal $goalID not found.");
       }
     } catch (e) {
-      print("Error in updateDialogStatus: $e");
+      print("Error in updateGoalStatus: $e");
       rethrow;
     }
+  }
+
+  Future<void> remGoal(String goalID) async{
+    try{
+
+      final snapshot = await _firestore.collection("goal").doc(goalID).get();
+
+      if(snapshot.exists){
+
+        await _firestore.collection("goal").doc(goalID).delete();
+
+        print("Checklist ID $goalID successfully deleted.");
+
+      }else{
+
+        print("Goal ID $goalID not found.");
+
+      }
+
+    }catch(e){
+      print("Error in remGoal: $e");
+      rethrow;
+    }
+
   }
 }

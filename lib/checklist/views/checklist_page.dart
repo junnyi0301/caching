@@ -61,7 +61,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                         builder: (context) => CreateChecklistPage(checklistType: "create", checklistID: " "),
                       ),
                     ).then((_) {
-                      //loadChecklists();
+                      loadChecklist();
                     });
                   },
                   child: Text('Create New Checklist', style: design.contentText),
@@ -95,6 +95,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                         return ChecklistBlock(
                             checklistID: checklist["ChecklistID"],
                             checklistTitle: checklist["ChecklistTitle"],
+                            checklistDate: checklist["ChecklistDate"],
                             checklistStatus: checklist["ChecklistStatus"],
                             itemList: checklist["ItemList"] ?? {},
                             reload: () => loadChecklist()

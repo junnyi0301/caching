@@ -28,6 +28,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
   final checklistTitleCtrl = TextEditingController();
   final checklistReminderDateCtrl = TextEditingController();
   int _reminder = 1;
+  late var waitRun;
 
   List<TextEditingController> itemCtrl = [];
 
@@ -35,6 +36,15 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
   void initState(){
     super.initState();
     _addItem();
+
+    if(widget.checklistType == "edit"){
+      loadChecklistData();
+    }
+  }
+
+  Future<void> waitFunc(String checklistID) async{
+    waitRun = await _checkListService.getSpecificChecklist(checklistID);
+    print(waitRun);
   }
 
   Future<void> _selectDate() async {
@@ -75,6 +85,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
     String title = checklistTitleCtrl.text;
     String date = checklistReminderDateCtrl.text;
     List<String> items = [];
+    String checklistID;
 
     if (title.trim().isEmpty){
       title = "";
@@ -86,14 +97,58 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
     if(_reminder == 1){
 
-      await _checkListService.addNewChecklist(title, date, items);
+      checklistID = await _checkListService.addNewChecklist(title, date, items);
 
     }else{
 
-      await _checkListService.addNewChecklist(title, "", items);
+      checklistID = await _checkListService.addNewChecklist(title, "", items);
 
     }
 
+    await waitFunc(checklistID);
+
+  }
+
+  void loadChecklistData() async{
+    Map<String, dynamic> checklistData = await _checkListService.getSpecificChecklist(widget.checklistID);
+    Map<String, dynamic> itemData = await _checkListService.getSpecificChecklistItem(widget.checklistID);
+
+    setState(() {
+      checklistTitleCtrl.text = checklistData["ChecklistTitle"];
+      checklistReminderDateCtrl.text = checklistData["ChecklistDate"];
+
+      if(checklistReminderDateCtrl.text.isEmpty){
+        _reminder = 2;
+      }
+
+      itemCtrl.clear();
+
+      itemData.forEach((key, value) {
+        if(value["ItemStatus"] != "Inactive"){
+          TextEditingController controller = TextEditingController(text: value["ItemName"]);
+          itemCtrl.add(controller);
+        }
+      });
+
+    });
+
+  }
+
+  Future<void> editChecklist() async{
+    List<String> item = [];
+    await _checkListService.updateChecklistTitle(widget.checklistID, checklistTitleCtrl.text);
+
+    if(_reminder == 1){
+      print("run reminder 1");
+      await _checkListService.updateChecklistDate(widget.checklistID, checklistReminderDateCtrl.text);
+    }else{
+      await _checkListService.updateChecklistDate(widget.checklistID, "");
+    }
+
+    for(int i = 0; i < itemCtrl.length; i ++){
+      item.add(itemCtrl[i].text);
+    }
+    await _checkListService.updateItem(widget.checklistID, item);
   }
 
   @override
@@ -123,7 +178,9 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                 child: Column(
                   children: [
 
-                    Text("Create Checklist", style: design.subtitleText,),
+                    widget.checklistType== "create"
+                      ? Text("Create Checklist", style: design.subtitleText,)
+                      : Text("Edit Checklist", style: design.subtitleText,),
 
                     SizedBox(height: 10),
 
@@ -178,7 +235,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    _reminder == 1? SizedBox(height: 20): SizedBox(height: 0),
 
                     _reminder == 1
                       ?TextFormField(
@@ -204,7 +261,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                       )
                       :Text(""),
 
-                    SizedBox(height: 20),
+                    _reminder == 1? SizedBox(height: 20): SizedBox(height: 0),
 
                     SizedBox(
                       child: Column(
@@ -277,22 +334,29 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                                   addChecklist();
 
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Checklist Created Successfully')),
+                                    SnackBar(content: Text('Checklist Created Successfully.')),
                                   );
+
+                                  Navigator.pop(context);
 
                                 } else {
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Checklist Updated Successfully')),
-                                  );
-                                }
+                                  if(itemCtrl.isNotEmpty){
+                                    await editChecklist();
 
-                                Navigator.pushReplacement<void, void>(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                    builder: (BuildContext context) => const ChecklistPage(),
-                                  ),
-                                );
+                                    await waitFunc(widget.checklistID);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Checklist Updated Successfully.')),
+                                    );
+
+                                    Navigator.pop(context);
+                                  }else{
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Please contain at least 1 item in checklist.')),
+                                    );
+                                  }
+                                }
                               }
                             },
                             child: Text(widget.checklistType == "create" ? "Create Checklist" : "Save"),

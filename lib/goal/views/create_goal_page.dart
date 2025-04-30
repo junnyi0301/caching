@@ -39,6 +39,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Map<String, dynamic>> allFriends = []; // All friends from firebase
   List<Map<String, dynamic>> filteredFriends = []; // Displayed friends
   List<Map<String, dynamic>> selectedFriends = []; // Selected friends
+  late var waitRun;
 
   @override
   void initState() {
@@ -51,11 +52,21 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   }
 
+  Future<void> waitFunc(String goalID) async{
+    waitRun = await _goalService.getGoalData(goalID);
+    print(waitRun);
+  }
+
   void calcDuration() {
-    double target = double.tryParse(targetAmountCtrl.text) ?? 0;
-    double pay = double.tryParse(constPayAmountCtrl.text) ?? 1;
+    final pay = double.tryParse(constPayAmountCtrl.text) ?? 0;
+    final target = double.tryParse(targetAmountCtrl.text) ?? 0;
+
     setState(() {
-      _duration = target / pay;
+      if (pay > 0) {
+        _duration = target / pay;
+      } else {
+        _duration = 0;
+      }
     });
   }
 
@@ -99,6 +110,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         await _goalService.addUserToGoal(goalID, friendID);
       }
     }
+
+    await waitFunc(goalID);
   }
 
   void loadGoalData() async {
@@ -152,8 +165,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               child: Column(
                 children: [
 
-                  Text("Create Goal", style: design.subtitleText,),
+                  Text(widget.goalType == "create"? "Create Goal" : "Edit Goal", style: design.subtitleText,),
 
+                  Text(widget.goalType == "create"? "All field with * must be filled in." : "All field with * must be filled in.", style: design.captionText, textAlign: TextAlign.center),
+                  Text(widget.goalType == "create"? "" : "Only goal name, goal description and friend contribution can be edit.", style: design.captionText, textAlign: TextAlign.center),
                   SizedBox(height: 10),
 
                   TextFormField(
@@ -242,6 +257,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter pay amount.';
+                      }else if(double.tryParse(value)! <= 0){
+                        return "Please enter more than 0.";
                       }
                       return null;
                     },
@@ -318,19 +335,37 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         List<String> selectedFriendID = selectedFriends.map((friend) => friend['uid'] as String).toList();
 
                         if (widget.goalType == "create") {
-                          addGoal(
-                            goalNameCtrl.text,
-                            goalDescCtrl.text,
-                            double.parse(targetAmountCtrl.text),
-                            _commitment!,
-                            double.parse(constPayAmountCtrl.text),
-                            _duration.toInt(),
-                            selectedFriendID
-                          );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Goal Created Successfully')),
-                          );
+                          if(double.parse(targetAmountCtrl.text) < double.parse(constPayAmountCtrl.text)){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Your scheduled payment amount cannot exceed your target amount.')),
+                            );
+                          }else if(_duration <= 1){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(_commitment == "by Daily Amount"
+                                  ?'Your duration to achieve the goal must be more than 1 day.'
+                                  :'Your duration to achieve the goal must be more than 1 month.'
+                              )
+                              ),
+                            );
+                          }else{
+                            addGoal(
+                                goalNameCtrl.text,
+                                goalDescCtrl.text,
+                                double.parse(targetAmountCtrl.text),
+                                _commitment!,
+                                double.parse(constPayAmountCtrl.text),
+                                _duration.toInt(),
+                                selectedFriendID
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Goal Created Successfully')),
+                            );
+
+                            Navigator.pop(context);
+
+                          }
 
                         } else {
                           editGoal(
@@ -342,14 +377,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Goal Updated Successfully')),
                           );
+
+                          await waitFunc(widget.goalID);
+
+                          Navigator.pop(context);
                         }
 
-                        Navigator.pushReplacement<void, void>(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => const GoalPage(),
-                          ),
-                        );
+
                       }
                     },
                     child: Text(widget.goalType == "create" ? "Create Goal" : "Save"),

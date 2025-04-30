@@ -9,7 +9,8 @@ class ChecklistService{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> addNewChecklist(String title, String remind, List<String> itemList) async {
+  // add checklist
+  Future<String> addNewChecklist(String title, String remind, List<String> itemList) async {
     try {
       String currentUserID = _auth.currentUser!.uid;
       print(" hi, $currentUserID");
@@ -41,14 +42,17 @@ class ChecklistService{
           .doc(newChecklist.checklistID)
           .set(newChecklist.toMap());
 
+      return newChecklist.checklistID;
     } catch (e) {
       print("Error in addNewChecklist: $e");
-      rethrow;
+      return "";
     }
   }
 
-  Future<void> addNowItemIntoList(String checklistID, List<String> newItemList) async {
+  // add new item into checklist
+  Future<void> addNewItemIntoList(String checklistID, List<String> newItemList) async {
     try {
+      print("Gonna Add");
       String currentUserID = _auth.currentUser!.uid;
 
       DocumentSnapshot checklistSnapshot = await _firestore
@@ -62,20 +66,26 @@ class ChecklistService{
         Map<String, dynamic> checklistData = checklistSnapshot.data() as Map<String, dynamic>;
 
         Map<String, dynamic> itemListData = Map<String, dynamic>.from(checklistData["ItemList"] ?? {});
-        for (int i = itemListData.length; i < newItemList.length; i++) {
-          itemListData[i.toString()] = ChecklistItem(
-              itemID: i.toString(),
+        int index = itemListData.length + 1;
+        print(index);
+        print(newItemList.length);
+        for (int i = 0; i < newItemList.length; i++) {
+          itemListData[index.toString()] = ChecklistItem(
+              itemID: index.toString(),
               itemName: newItemList[i],
               itemStatus: "Active"
           ).toMap();
+          index++;
         }
 
         await _firestore
             .collection("checklist")
             .doc(currentUserID)
-            .collection("user_checklists")
+            .collection("userChecklist")
             .doc(checklistID)
             .update({"ItemList": itemListData});
+      }else{
+        print("Checklist ID $checklistID not found.");
       }
     } catch (e) {
       print("Error in addNowItemIntoList: $e");
@@ -83,6 +93,7 @@ class ChecklistService{
     }
   }
 
+  // get all info of all checklist
   Future<List<Map<String, dynamic>>> getAllChecklist() async {
     try {
       String currentUserID = _auth.currentUser!.uid;
@@ -91,13 +102,291 @@ class ChecklistService{
           .collection("checklist")
           .doc(currentUserID)
           .collection("userChecklist")
-          .where("ChecklistStatus", isEqualTo: "Active")
+          .where("ChecklistStatus", isNotEqualTo: "Inactive")
           .get();
 
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      return snapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
       print("Error in getAllChecklist: $e");
       return [];
+    }
+  }
+
+  // get specific checklist data
+  Future<Map<String, dynamic>> getSpecificChecklist(String checklistID) async {
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      final snapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      return snapshot.data() as Map<String, dynamic>;
+    } catch (e) {
+      print("Error in getSpecificChecklist: $e");
+      return {};
+    }
+  }
+
+  // get specific checklist item list
+  Future<Map<String, dynamic>> getSpecificChecklistItem(String checklistID) async {
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+        Map<String, dynamic> checklistData = checklistSnapshot.data() as Map<String, dynamic>;
+
+        Map<String, dynamic> checklistItem = Map<String, dynamic>.from(checklistData["ItemList"]);
+
+        return checklistItem;
+      } else {
+        print("Checklist $checklistID not found.");
+        return {};
+      }
+
+    } catch (e) {
+      print("Error in getSpecificChecklistItem: $e");
+      return {}; // return empty map on error
+    }
+  }
+
+  //rem checklist
+  Future<void> remChecklist(String checklistID) async{
+    try{
+
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+
+        await _firestore
+            .collection("checklist")
+            .doc(currentUserID)
+            .collection("userChecklist")
+            .doc(checklistID)
+            .delete();
+
+        print("Checklist ID $checklistID successfully deleted.");
+
+      }else{
+        print("Checklist ID $checklistID not found.");
+      }
+
+    } catch(e){
+      print("Error in remChecklist: $e");
+      rethrow;
+    }
+  }
+
+  // update checklist status into active, complete
+  Future<void> updateChecklistStatus(String checklistID, String newStatus) async{
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+        await _firestore.collection("checklist").doc(currentUserID).collection("userChecklist").doc(checklistID).update({
+          "ChecklistStatus": newStatus,
+        });
+      } else {
+        print("Checklist $checklistID not found.");
+      }
+    } catch (e) {
+      print("Error in updateChecklistStatus: $e");
+      rethrow;
+    }
+  }
+
+  // update checklist title
+  Future<void> updateChecklistTitle(String checklistID, String newTitle) async{
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+        await _firestore.collection("checklist").doc(currentUserID).collection("userChecklist").doc(checklistID).update({
+          "ChecklistTitle": newTitle,
+        });
+      } else {
+        print("Checklist $checklistID not found.");
+      }
+    } catch (e) {
+      print("Error in updateChecklistTitle: $e");
+      rethrow;
+    }
+
+  }
+
+  // update checklist date
+  Future<void> updateChecklistDate(String checklistID, String newDate) async{
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+        await _firestore.collection("checklist").doc(currentUserID).collection("userChecklist").doc(checklistID).update({
+          "ChecklistDate": newDate,
+        });
+      } else {
+        print("Checklist $checklistID not found.");
+      }
+    } catch (e) {
+      print("Error in updateChecklistTitle: $e");
+      rethrow;
+    }
+  }
+
+  // update item into active, completed, inactive
+  Future<void> updateItemStatus(String checklistID, String itemID, String newStatus) async{
+    try {
+      String currentUserID = _auth.currentUser!.uid;
+
+      DocumentSnapshot checklistSnapshot = await _firestore
+          .collection("checklist")
+          .doc(currentUserID)
+          .collection("userChecklist")
+          .doc(checklistID)
+          .get();
+
+      if (checklistSnapshot.exists) {
+
+        Map<String, dynamic> oldChecklistData = await getSpecificChecklistItem(checklistID);
+        final oldActiveItem = oldChecklistData.entries.where((entry) =>
+          entry.value['ItemStatus'] == 'Active'
+        );
+        bool oriComplete = false;
+        if(oldActiveItem.isEmpty){
+          oriComplete = true;
+        }
+
+        await _firestore
+            .collection("checklist")
+            .doc(currentUserID)
+            .collection("userChecklist")
+            .doc(checklistID)
+            .update({
+          "ItemList.$itemID.ItemStatus": newStatus,
+        });
+
+        print("Item $itemID status updated to $newStatus");
+
+
+        Map<String, dynamic> newChecklistData = await getSpecificChecklistItem(checklistID);
+
+        // if not delete
+        if(newStatus != "Inactive"){
+
+          final newActiveItem = newChecklistData.entries.where((entry) =>
+          entry.value['ItemStatus'] == 'Active'
+          );
+
+          // Active to complete
+          if (newActiveItem.isEmpty && oriComplete == false) {
+            await updateChecklistStatus(checklistID, "Completed");
+            print("Checklist update to 'Completed'");
+          }
+
+          // Complete to active
+          if(newActiveItem.isNotEmpty && oriComplete == true){
+            await updateChecklistStatus(checklistID, "Active");
+            print("Checklist update to 'Active'");
+          }
+        }
+
+      } else {
+        print("Checklist $checklistID not found.");
+      }
+    } catch (e) {
+      print("Error in updateChecklistTitle: $e");
+      rethrow;
+    }
+  }
+
+  Future<String> getItemIDByName(String checklistID, String itemName) async {
+    try {
+      Map<String, dynamic> itemMap = await getSpecificChecklistItem(checklistID);
+
+      for (var entry in itemMap.entries) {
+        if (entry.value["ItemName"] == itemName) {
+          return entry.key;
+        }
+      }
+
+      return "";
+    } catch (e) {
+      print("Error in getItemIDByName: $e");
+      return "";
+    }
+  }
+
+  // either add or update item status when user edit the checklist
+  Future<void> updateItem(String checklistID, List<String> newItem) async {
+    try {
+      Map<String, dynamic> existingItemsMap = await getSpecificChecklistItem(checklistID);
+
+      List<String> existingItem = existingItemsMap.values
+          .where((item) => item["ItemStatus"] != "Inactive")
+          .map<String>((item) => item["ItemName"] as String)
+          .toList();
+      print(existingItem);
+
+      // check to remove item
+      for (String existItem in existingItem) {
+        if (!newItem.contains(existItem)) {
+          String id = await getItemIDByName(checklistID, existItem);
+          await updateItemStatus(checklistID, id, "Inactive");
+        }
+      }
+
+      // check to add item
+      List<String> itemToAdd = [];
+      for (String nItem in newItem) {
+        if (!existingItem.contains(nItem)) {
+          itemToAdd.add(nItem);
+          print("Has Added: $itemToAdd");
+        }
+      }
+      if (itemToAdd.isNotEmpty) {
+        await addNewItemIntoList(checklistID, itemToAdd);
+      }
+
+    } catch (e) {
+      print("Error in updateItem: $e");
+      rethrow;
     }
   }
 

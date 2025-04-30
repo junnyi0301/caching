@@ -8,7 +8,7 @@ import 'create_goal_page.dart';
 final design = Design();
 final GoalService _goalService = GoalService();
 
-class GoalBlock extends StatelessWidget {
+class GoalBlock extends StatefulWidget {
   final String goalID;
   final String goalName;
   final String goalDescr;
@@ -37,30 +37,35 @@ class GoalBlock extends StatelessWidget {
   });
 
   @override
+  State<GoalBlock> createState() => _GoalBlockState();
+}
+
+class _GoalBlockState extends State<GoalBlock> {
+  @override
   Widget build(BuildContext context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final String currentUserID = _auth.currentUser!.uid;
 
-    double progress = (ttlSaveAmount / targetAmt).clamp(0.0, 1.0);
+    double progress = (widget.ttlSaveAmount / widget.targetAmt).clamp(0.0, 1.0);
     double progressPercent = progress * 100;
 
     String type;
-    commitment == "by Daily Amount" ? type = "today" : type = "this month";
+    widget.commitment == "by Daily Amount" ? type = "today" : type = "this month";
 
     final _formKey = GlobalKey<FormState>();
     final topUpCtrl = TextEditingController();
 
     void reloadPage(){
-      if (reload != null) {
-        reload!();
+      if (widget.reload != null) {
+        widget.reload!();
       }
     }
 
     void topUpGoal() async {
-      await _goalService.updateContribution(goalID, double.parse(topUpCtrl.text));
-      double currentTotal = ttlSaveAmount + double.parse(topUpCtrl.text);
-      if(currentTotal >= targetAmt){
-        await _goalService.updateGoalStatus(goalID, "Completed");
+      await _goalService.updateContribution(widget.goalID, double.parse(topUpCtrl.text));
+      double currentTotal = widget.ttlSaveAmount + double.parse(topUpCtrl.text);
+      if(currentTotal >= widget.targetAmt){
+        await _goalService.updateGoalStatus(widget.goalID, "Completed");
       }
       reloadPage();
     }
@@ -125,17 +130,17 @@ class GoalBlock extends StatelessWidget {
     }
 
     void delGoal() async{
-      await _goalService.updateGoalStatus(goalID, "Inactive");
+      await _goalService.remGoal(widget.goalID);
       reloadPage();
     }
 
     void delGoalDialog() {
       // Ensure goalName is not null or empty
-      print('Deleting Goal: "$goalName"');
+      print('Deleting Goal: "${widget.goalName}"');
 
       AlertDialog delGoalAlertDialog = AlertDialog(
         title: Text('Delete Goal'),
-        content: Text("Are you sure to delete $goalName ?"),
+        content: Text("Are you sure to delete ${widget.goalName} ?"),
         actions: [
           Center(
             child: Row(
@@ -172,7 +177,7 @@ class GoalBlock extends StatelessWidget {
     return Card(
       margin: EdgeInsets.all(10),
       elevation: 5,
-      color: status == "Active"? design.primaryButton: Color(0xFFD9D9D9),
+      color: widget.status == "Active"? design.primaryButton: Color(0xFFD9D9D9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -180,19 +185,19 @@ class GoalBlock extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                Text(goalName, style: design.subtitleText),
+                Text(widget.goalName, style: design.subtitleText),
 
                 SizedBox(height: 5),
-                Divider(color: status == "Active"? Colors.orange: Colors.white),
+                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 Text("Goal Amount:", style: design.contentText),
-                Text("RM ${targetAmt.toStringAsFixed(2)}", style: design.subtitleText),
+                Text("RM ${widget.targetAmt.toStringAsFixed(2)}", style: design.subtitleText),
 
                 SizedBox(height: 10),
 
                 Text("Total Savings:", style: design.contentText),
-                Text("RM ${ttlSaveAmount.toStringAsFixed(2)}", style: design.subtitleText,),
+                Text("RM ${widget.ttlSaveAmount.toStringAsFixed(2)}", style: design.subtitleText,),
 
                 SizedBox(height: 10),
 
@@ -236,7 +241,7 @@ class GoalBlock extends StatelessWidget {
 
                 SizedBox(height: 10),
 
-                Text(goalDescr, style: design.captionText, textAlign: TextAlign.justify,),
+                Text(widget.goalDescr, style: design.captionText, textAlign: TextAlign.justify,),
                 SizedBox(height: 20),
 
                 // Contribution List
@@ -244,16 +249,16 @@ class GoalBlock extends StatelessWidget {
                 _contributionList(),
 
                 SizedBox(height: 5),
-                Divider(color: status == "Active"? Colors.orange: Colors.white),
+                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 // Your Own Contribution
                 Text("You have Contributed:", style: design.captionText),
                 SizedBox(height: 5),
                 FutureBuilder<double>(
-                  future: commitment == "by Daily Amount"
-                      ? _goalService.getDailyContribution(goalID)
-                      : _goalService.getMonthlyContribution(goalID),
+                  future: widget.commitment == "by Daily Amount"
+                      ? _goalService.getDailyContribution(widget.goalID)
+                      : _goalService.getMonthlyContribution(widget.goalID),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Text("Loading...", style: design.contentText);
@@ -263,7 +268,7 @@ class GoalBlock extends StatelessWidget {
                       double ownContribute = snapshot.data ?? 0.0;
                       return
                         Text(
-                          "RM ${ownContribute.toStringAsFixed(2)} / RM ${targetAmt.toStringAsFixed(2)}",
+                          "RM ${ownContribute.toStringAsFixed(2)} / RM ${widget.targetAmt.toStringAsFixed(2)}",
                           style: design.contentText,
                         );
                     }
@@ -272,13 +277,13 @@ class GoalBlock extends StatelessWidget {
                 Text(type, style: design.contentText,),
 
                 SizedBox(height: 5),
-                Divider(color: status == "Active"? Colors.orange: Colors.white),
+                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
                 SizedBox(height: 5),
 
                 // Example of total contribution (optional)
                 Text("Total Contribute", style: design.contentText),
                 Text(
-                  "RM ${(personInvolve[currentUserID]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
+                  "RM ${(widget.personInvolve[currentUserID]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
                   style: design.contentText,
                 ),
 
@@ -286,7 +291,7 @@ class GoalBlock extends StatelessWidget {
 
                 ElevatedButton(
                   onPressed: topUpDialog,
-                  child: Text("Top Up", style: design.contentText,),
+                  child: Text("Contribute", style: design.contentText,),
                   style: ElevatedButton.styleFrom(
                     fixedSize: Size(250, 20),
                     backgroundColor: design.primaryColor,
@@ -300,7 +305,7 @@ class GoalBlock extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "edit",goalID: goalID,)),
+                      MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "edit",goalID: widget.goalID,)),
                     ).then((_) {
                       reloadPage();
                     });
@@ -337,7 +342,7 @@ class GoalBlock extends StatelessWidget {
 
   Widget _contributionList() {
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _goalService.getAllMemberContribution(goalID),
+      future: _goalService.getAllMemberContribution(widget.goalID),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -385,14 +390,14 @@ class GoalBlock extends StatelessWidget {
                           Expanded(
                             flex: 3,
                             child:
-                              status == "Active"
+                              widget.status == "Active"
                                   ?Text(
-                                    "${((totalContribution / targetAmt) * 100).toStringAsFixed(0)} %",
+                                    "${((totalContribution / widget.targetAmt) * 100).toStringAsFixed(0)} %",
                                     style: design.contentText,
                                     textAlign: TextAlign.end,
                                   )
                                   :Text(
-                                    "${((totalContribution / ttlSaveAmount) * 100).toStringAsFixed(0)} %",
+                                    "${((totalContribution / widget.ttlSaveAmount) * 100).toStringAsFixed(0)} %",
                                     style: design.contentText,
                                     textAlign: TextAlign.end,
                                   ),
@@ -410,5 +415,4 @@ class GoalBlock extends StatelessWidget {
       },
     );
   }
-
 }
