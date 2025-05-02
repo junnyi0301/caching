@@ -43,7 +43,7 @@ class NotiService{
       initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         final checklistID = response.payload;
-        navigatorKey.currentState?.pushNamed('/checklist', arguments: checklistID);
+        //navigatorKey.currentState?.pushNamed('/checklist', arguments: checklistID);
       },
     );
   }
@@ -243,10 +243,8 @@ class NotiService{
     Title: ${notification.title}
     Body: ${notification.body}
     Scheduled for: ${notification.payload}
-    Android Details: ${notification.android}
     ''');
     }
     print('═══════════════════════════════════');
   }
-
 }

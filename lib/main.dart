@@ -1,10 +1,9 @@
 import 'package:caching/auth/auth_gate.dart';
 import 'package:caching/auth/views/login.dart';
+import 'package:caching/bottomNav.dart';
 import 'package:caching/utilities/firebase_options.dart';
 import 'package:caching/chat/views/friends.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:caching/create_goal.dart';
-import 'package:caching/goal.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -28,9 +27,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: const AuthGate()
-      //Don't create your page in main.dart
-      //Leave the main as it is right now and create a new file
-      //Change const ExamplePage(title: 'Example') to your page for easier integration
     );
   }
 }

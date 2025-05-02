@@ -1,3 +1,4 @@
+import 'package:caching/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/auth/auth_service.dart';
@@ -51,6 +52,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
         title: Text("Checklist", style: design.subtitleText),
         centerTitle: true,
       ),
+      bottomNavigationBar: BottomNav(currentIndex: 2),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(25),

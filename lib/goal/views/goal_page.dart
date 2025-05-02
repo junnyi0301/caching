@@ -1,3 +1,4 @@
+import 'package:caching/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/goal/services/goal_service.dart';
@@ -47,6 +48,7 @@ class _GoalState extends State<GoalPage> {
         title: Text("Goal", style: design.subtitleText),
         centerTitle: true,
       ),
+      bottomNavigationBar: BottomNav(currentIndex: 1,),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(25),
