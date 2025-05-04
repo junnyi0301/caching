@@ -5,11 +5,14 @@ import 'package:caching/checklist/services/checklist_service.dart';
 import 'package:intl/intl.dart';
 import 'package:caching/utilities/noti_service.dart';
 
+import 'package:caching/utilities/notification.dart';
+
 final design = Design();
-final ChecklistService _checkListService = ChecklistService();
-final NotiService _notiService = NotiService();
+final ChecklistService _checklistService = ChecklistService();
+//final NotiService _notiService = NotiService();
 
 class CreateChecklistPage extends StatefulWidget {
+
   final String checklistType;
   final String checklistID;
 
@@ -34,6 +37,9 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
   List<TextEditingController> itemCtrl = [];
 
+  final GlobalKey<FormFieldState> titleFieldKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> dateFieldKey = GlobalKey<FormFieldState>();
+
   @override
   void initState(){
     super.initState();
@@ -45,7 +51,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
   }
 
   Future<void> waitFunc(String checklistID) async{
-    waitRun = await _checkListService.getSpecificChecklist(checklistID);
+    waitRun = await _checklistService.getSpecificChecklist(checklistID);
     print(waitRun);
   }
 
@@ -100,22 +106,22 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
     if(_reminder == 1){
 
-      checklistID = await _checkListService.addNewChecklist(title, date, items);
+      checklistID = await _checklistService.addNewChecklist(title, date, items);
 
     }else{
 
-      checklistID = await _checkListService.addNewChecklist(title, "", items);
+      checklistID = await _checklistService.addNewChecklist(title, "", items);
 
     }
 
-    await _checkListService.updateChecklistReminder(checklistID);
+    await _checklistService.updateChecklistReminder(checklistID);
     await waitFunc(checklistID);
 
   }
 
   void loadChecklistData() async{
-    Map<String, dynamic> checklistData = await _checkListService.getSpecificChecklist(widget.checklistID);
-    Map<String, dynamic> itemData = await _checkListService.getSpecificChecklistItem(widget.checklistID);
+    Map<String, dynamic> checklistData = await _checklistService.getSpecificChecklist(widget.checklistID);
+    Map<String, dynamic> itemData = await _checklistService.getSpecificChecklistItem(widget.checklistID);
 
     setState(() {
       checklistTitleCtrl.text = checklistData["ChecklistTitle"];
@@ -140,19 +146,20 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
   Future<void> editChecklist() async{
     List<String> item = [];
-    await _checkListService.updateChecklistTitle(widget.checklistID, checklistTitleCtrl.text);
+    await _checklistService.updateChecklistTitle(widget.checklistID, checklistTitleCtrl.text);
 
     if(_reminder == 1){
-      await _checkListService.updateChecklistDate(widget.checklistID, checklistReminderDateCtrl.text);
+      await _checklistService.updateChecklistDate(widget.checklistID, checklistReminderDateCtrl.text);
     }else{
-      await _checkListService.updateChecklistDate(widget.checklistID, "");
+      await _checklistService.updateChecklistDate(widget.checklistID, "");
     }
 
     for(int i = 0; i < itemCtrl.length; i ++){
       item.add(itemCtrl[i].text);
     }
-    await _checkListService.updateChecklistReminder(widget.checklistID);
-    await _checkListService.updateItem(widget.checklistID, item);
+
+    await _checklistService.updateItem(widget.checklistID, item);
+    await _checklistService.updateChecklistReminder(widget.checklistID);
   }
 
   @override
@@ -189,11 +196,14 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                     SizedBox(height: 10),
 
                     TextFormField(
+                      key: titleFieldKey,
                       controller: checklistTitleCtrl,
                       focusNode: _focusNode,
                       decoration: const InputDecoration(labelText: 'Checklist Title'),
                       validator: (value) {
-                        if (value!.length > 15) {
+                        if (value == null || value.isEmpty){
+                          return "Please enter a checklist title.";
+                        } else if (value.length > 15) {
                           return 'Please enter within 15 words';
                         }
                         return null;
@@ -243,6 +253,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
                     _reminder == 1
                       ?TextFormField(
+                        key: dateFieldKey,
                         controller: checklistReminderDateCtrl,
                         decoration: InputDecoration(
                           labelText: "Remind Date*",
@@ -335,14 +346,13 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
                                 if (_reminder == 1) {
                                   print("Run Notification");
+                                  NotificationService().cancelAllNotification();
 
-                                  final int id = checklistTitleCtrl.text.hashCode;
-
-                                  await NotiService().showNotification(
-                                    id: id,
+                                  await NotificationService().directShowNotification(
                                     title: "Cachingg Checklist Reminder",
                                     body: "You had set a reminder on ${checklistReminderDateCtrl.text}. Click to check more.",
                                   );
+
                                 }
 
 
@@ -368,12 +378,32 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
                                     );
 
                                     Navigator.pop(context);
+
                                   }else{
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('Please contain at least 1 item in checklist.')),
                                     );
                                   }
                                 }
+                              }else{
+
+                                if (titleFieldKey.currentState?.hasError == true) {
+                                  Scrollable.ensureVisible(
+                                    titleFieldKey.currentContext!,
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                } else if (dateFieldKey.currentState?.hasError == true) {
+                                  Scrollable.ensureVisible(
+                                    dateFieldKey.currentContext!,
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Form validation failed. Please check your inputs.')),
+                                );
                               }
                             },
                             child: Text(widget.checklistType == "create" ? "Create Checklist" : "Save"),

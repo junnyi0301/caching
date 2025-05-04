@@ -6,6 +6,8 @@ import 'package:caching/checklist/model/checklist.dart';
 import 'package:caching/checklist/model/checklistItem.dart';
 import 'package:caching/utilities/noti_service.dart';
 
+import '../../utilities/notification.dart';
+
 class ChecklistService{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -394,16 +396,50 @@ class ChecklistService{
   Future<void> updateChecklistReminder(String checklistID) async {
     try {
       final checklistData = await getSpecificChecklist(checklistID);
-      final notiService = NotiService();
+      //final notiService = NotiService();
 
       if (checklistData["ChecklistDate"]?.isNotEmpty ?? false) {
-        await notiService.scheduleChecklistNotification(
-          checklistId: checklistID,
-          title: checklistData["ChecklistTitle"],
-          dateString: checklistData["ChecklistDate"],
+        // await notiService.scheduleChecklistNotification(
+        //   checklistId: checklistID,
+        //   title: checklistData["ChecklistTitle"],
+        //   dateString: checklistData["ChecklistDate"],
+        // );
+
+        print("Process Schedule Noti");
+
+        final parts = checklistData["ChecklistDate"].split('-').map(int.parse).toList();
+        DateTime scheduleDateTime = DateTime(parts[0], parts[1], parts[2], 9, 0);
+
+        print(parts[0]);
+        print(parts[1]);
+        print(parts[2]);
+        print(DateTime(parts[0], parts[1], parts[2], 9, 0));
+        print(scheduleDateTime);
+
+        String title = checklistData["ChecklistTitle"];
+
+        await NotificationService().scheduleNotification(
+            id: checklistID.hashCode,
+            title: "Cachingg Chaecklist Reminder",
+            body: "Remember to complete your $title by today!",
+            payload: checklistData["ChecklistDate"],
+            scheduledTime: scheduleDateTime
         );
+
+        await NotificationService().scheduleNotification(
+            id: 0,
+            title: "Test",
+            body: "Remember to complete your $title by today!",
+            payload: checklistData["ChecklistDate"],
+            scheduledTime: DateTime.now().add(Duration(seconds: 10))
+        );
+        print("Now: ${DateTime.now()}");
+
+        await NotificationService().debugPrintPendingNotifications();
+        print("Reminder save successfully");
       } else {
-        await notiService.cancelChecklistNotification(checklistID);
+        //await notiService.cancelChecklistNotification(checklistID);
+        await NotificationService().cancelChecklistNotification(checklistID.hashCode);
       }
     } catch (e) {
       debugPrint('Error updating reminder: $e');

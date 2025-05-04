@@ -28,10 +28,6 @@ class _GoalState extends State<GoalPage> {
     loadGoals();
   }
 
-  void logout() {
-    _authService.signOut();
-  }
-
   void loadGoals() async {
     activeGoal = await _goalService.getActiveGoals();
     completeGoal = await _goalService.getCompletedGoals();
@@ -123,10 +119,7 @@ class _GoalState extends State<GoalPage> {
                     ],
                   ],
                 ),
-              ),
-              ElevatedButton(onPressed: (){
-                logout();
-              }, child: Text("Log Out"))
+              )
             ],
           ),
         ),

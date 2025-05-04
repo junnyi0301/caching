@@ -3,11 +3,18 @@ import 'package:caching/auth/views/login.dart';
 import 'package:caching/bottomNav.dart';
 import 'package:caching/utilities/firebase_options.dart';
 import 'package:caching/chat/views/friends.dart';
+import 'package:caching/utilities/notification.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  NotificationService().initNotification();
+  tz.initializeTimeZones();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }

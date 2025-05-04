@@ -39,6 +39,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Map<String, dynamic>> allFriends = []; // All friends from firebase
   List<Map<String, dynamic>> filteredFriends = []; // Displayed friends
   List<Map<String, dynamic>> selectedFriends = []; // Selected friends
+
+  final GlobalKey<FormFieldState> nameFieldKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> targetFieldKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> payFieldKey = GlobalKey<FormFieldState>();
+
+  String _errorMsg = "";
   late var waitRun;
 
   @override
@@ -172,9 +178,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   SizedBox(height: 10),
 
                   TextFormField(
+                    key: nameFieldKey,
                     controller: goalNameCtrl,
                     focusNode: _focusNode,
-                    decoration: const InputDecoration(labelText: 'Goal Name*'),
+                    decoration: InputDecoration(
+                        labelText: 'Goal Name*',
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter goal name.';
@@ -196,14 +205,24 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
                   TextFormField(
                     readOnly: widget.goalType == "create" ? false : true,
+                    key: targetFieldKey,
                     controller: targetAmountCtrl,
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
                     ],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Target Amount*',
                       prefixText: 'RM ',
+                      labelStyle: TextStyle(
+                        color: _errorMsg == "" ? Colors.black : Colors.red,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: _errorMsg == "" ? Colors.black : Colors.red),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: _errorMsg == "" ? Colors.black : Colors.red, width: 2),
+                      )
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -243,6 +262,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
                   TextFormField(
                     readOnly: widget.goalType == "create" ? false : true,
+                    key: payFieldKey,
                     controller: constPayAmountCtrl,
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
@@ -253,6 +273,15 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           ? 'Daily Pay Amount*'
                           : 'Monthly Pay Amount*',
                       prefixText: 'RM ',
+                      labelStyle: TextStyle(
+                        color: _errorMsg == "" ? Colors.black : Colors.red,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: _errorMsg == "" ? Colors.black : Colors.red),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: _errorMsg == "" ? Colors.black : Colors.red, width: 2),
+                      )
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -329,18 +358,55 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
                   widget.goalType == "create"? Text(" "): Text("Please note that the contributions of a removed member will also be deleted."),
 
+                  Text(_errorMsg, style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),
+
+                  SizedBox(height: 5,),
+
                   ElevatedButton(
                     onPressed: () async {
+                      setState(() {
+                        _errorMsg = "";
+                      });
                       if (_formKey.currentState!.validate()) {
                         List<String> selectedFriendID = selectedFriends.map((friend) => friend['uid'] as String).toList();
 
                         if (widget.goalType == "create") {
 
                           if(double.parse(targetAmountCtrl.text) < double.parse(constPayAmountCtrl.text)){
+
+                            setState(() {
+                              _errorMsg = "Please enter again, your scheduled payment amount cannot exceed your target amount.";
+                            });
+                            await Future.delayed(Duration(milliseconds: 100));
+
+                            Scrollable.ensureVisible(
+                              targetFieldKey.currentContext!,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Your scheduled payment amount cannot exceed your target amount.')),
                             );
                           }else if(_duration <= 1){
+
+                            setState(() {
+                              _commitment == "by Daily Amount"
+                                  ? _errorMsg = 'Please enter again, your duration to achieve the goal must be more than 1 day.'
+                                  : _errorMsg = 'Please enter again, your duration to achieve the goal must be more than 1 month.';
+                            });
+                            Scrollable.ensureVisible(
+                              targetFieldKey.currentContext!,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+
+                            Scrollable.ensureVisible(
+                              targetFieldKey.currentContext!,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(_commitment == "by Daily Amount"
                                   ?'Your duration to achieve the goal must be more than 1 day.'
@@ -349,6 +415,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                               ),
                             );
                           }else{
+                            setState(() {
+                              _errorMsg = "";
+                            });
+
                             addGoal(
                                 goalNameCtrl.text,
                                 goalDescCtrl.text,
@@ -384,6 +454,31 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         }
 
 
+                      }else{
+
+                        if (nameFieldKey.currentState?.hasError == true) {
+                          Scrollable.ensureVisible(
+                            nameFieldKey.currentContext!,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        } else if (targetFieldKey.currentState?.hasError == true) {
+                          Scrollable.ensureVisible(
+                            targetFieldKey.currentContext!,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        } else if (payFieldKey.currentState?.hasError == true) {
+                          Scrollable.ensureVisible(
+                            payFieldKey.currentContext!,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Form validation failed. Please check your inputs.')),
+                        );
                       }
                     },
                     child: Text(widget.goalType == "create" ? "Create Goal" : "Save"),

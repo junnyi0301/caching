@@ -19,7 +19,7 @@ class ChecklistPage extends StatefulWidget {
 class _ChecklistPageState extends State<ChecklistPage> {
   final AuthService _authService = AuthService();
   final ChecklistService _checklistService = ChecklistService();
-  final notiService = NotiService();
+  //final notiService = NotiService();
 
   List<Map<String, dynamic>> allChecklist = [];
 
@@ -29,10 +29,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
     loadChecklist();
   }
 
-  void logout() {
-    _authService.signOut();
-  }
-
   void loadChecklist() async{
     allChecklist = await _checklistService.getAllChecklist();
     setState(() {
@@ -40,9 +36,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
     });
   }
 
-  void trying() async{
-    await NotiService().scheduleTestNotification();
-  }
+  // void trying() async{
+  //   await NotiService().scheduleTestNotification();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,32 +110,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
               ),
 
               ElevatedButton(onPressed: (){
-
-                logout();
-
-              }, child: Text("Logout")),
-
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await NotiService().scheduleNotification(
-                      title: "Reminder",
-                      body: "Don't forget your task!",
-                      hour: 6,
-                      minute: 03,
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Notification scheduled successfully')),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: ${e.toString()}')),
-                    );
-                  }
-                  await NotiService().debugPrintPendingNotifications();
-                },
-                child: Text("Schedule Notification"),
-              )
+                print(DateTime.now());
+              }, child: Text("Now"))
             ],
           ),
         ),

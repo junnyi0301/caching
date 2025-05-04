@@ -105,6 +105,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> {
         lastDate: DateTime(today.year + 10),
       );
 
+      //await _checklistService.updateChecklistReminder(widget.checklistID);
       await _checklistService.updateChecklistReminder(widget.checklistID);
 
       if (_picked != null) {
