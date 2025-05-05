@@ -218,10 +218,18 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
     return Scaffold(
       appBar: AppBar(
         backgroundColor: design.primaryColor,
-        leading: Container(
-          child: IconButton(onPressed: (){
-            Navigator.pop(context);
-          }, icon: Icon(Icons.arrow_back_ios_new_rounded)),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.keyboard_arrow_left, color: Colors.black),
+          iconSize: 30,
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.white),
+            minimumSize: WidgetStatePropertyAll(Size(36, 36)),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
+            ),
+          ),
         ),
         title: widget.checklistType == "create"? Text("Create Checklist", style: design.subtitleText)
             : Text("Edit Checklist", style: design.subtitleText),
