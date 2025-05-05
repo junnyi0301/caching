@@ -5,6 +5,7 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../../bottomNav.dart';
 import '../../utilities/design.dart';
 import '../model/transaction.dart';
 import '../views/transactions.dart';
@@ -108,6 +109,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
         backgroundColor: const Color(0xFFB9D3FB),
       ),
       backgroundColor: const Color(0xFFE7EEFD),
+      bottomNavigationBar: BottomNav(currentIndex: 2),
       body: StreamBuilder<List<Transaction>>(
         stream: svc.getTransactionsStream(),
         builder: (ctx, snapshot) {

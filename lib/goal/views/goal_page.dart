@@ -28,10 +28,6 @@ class _GoalState extends State<GoalPage> {
     loadGoals();
   }
 
-  void logout() {
-    _authService.signOut();
-  }
-
   void loadGoals() async {
     activeGoal = await _goalService.getActiveGoals();
     completeGoal = await _goalService.getCompletedGoals();
@@ -48,7 +44,7 @@ class _GoalState extends State<GoalPage> {
         title: Text("Goal", style: design.subtitleText),
         centerTitle: true,
       ),
-      bottomNavigationBar: BottomNav(currentIndex: 1,),
+      bottomNavigationBar: BottomNav(currentIndex: 0),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(25),
@@ -123,10 +119,7 @@ class _GoalState extends State<GoalPage> {
                     ],
                   ],
                 ),
-              ),
-              ElevatedButton(onPressed: (){
-                logout();
-              }, child: Text("Log Out"))
+              )
             ],
           ),
         ),
