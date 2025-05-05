@@ -48,7 +48,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
         title: Text("Checklist", style: design.subtitleText),
         centerTitle: true,
       ),
-      bottomNavigationBar: BottomNav(currentIndex: 2),
+      bottomNavigationBar: BottomNav(currentIndex: 1),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(25),
@@ -84,9 +84,10 @@ class _ChecklistPageState extends State<ChecklistPage> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: 35),
 
               Text("Your Checklist", style: design.contentText),
+              SizedBox(height: 10,),
               allChecklist.isEmpty
                 ? Text("Create a checklist now.")
                 : Expanded(

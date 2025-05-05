@@ -53,7 +53,7 @@ class _FriendsPageState extends State<FriendsPage> {
           title: Text("Friends", style: design.titleText),
         ),
         backgroundColor: Color(0xFFE7EEFD),
-        bottomNavigationBar: BottomNav(currentIndex: 0,),
+        bottomNavigationBar: BottomNav(currentIndex: 3),
         body: Column(children: [
           TabBar(tabs: [
             Tab(

@@ -327,6 +327,7 @@ class ChecklistService{
           // Active to complete
           if (newActiveItem.isEmpty && oriComplete == false) {
             await updateChecklistStatus(checklistID, "Completed");
+            await updateChecklistDate(checklistID, "");
             print("Checklist update to 'Completed'");
           }
 

@@ -44,7 +44,7 @@ class _GoalState extends State<GoalPage> {
         title: Text("Goal", style: design.subtitleText),
         centerTitle: true,
       ),
-      bottomNavigationBar: BottomNav(currentIndex: 1,),
+      bottomNavigationBar: BottomNav(currentIndex: 0),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(25),

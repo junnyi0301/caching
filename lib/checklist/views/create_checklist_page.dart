@@ -244,13 +244,17 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                       ? Text("Create Checklist", style: design.subtitleText,)
                       : Text("Edit Checklist", style: design.subtitleText,),
 
+                    Text("Please add at least one item to create the checklist.", style: design.captionText, textAlign: TextAlign.center),
+
                     SizedBox(height: 10),
 
                     TextFormField(
                       key: titleFieldKey,
                       controller: checklistTitleCtrl,
                       focusNode: _focusNode,
-                      decoration: const InputDecoration(labelText: 'Checklist Title'),
+                      decoration: const InputDecoration(
+                        labelText: 'Checklist Title',
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty){
                           return "Please enter a checklist title.";
@@ -261,13 +265,14 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                       },
                     ),
 
-                    SizedBox(height: 20),
+                    SizedBox(height: 30),
 
                     SizedBox(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Reminder',),
+                          Text('Reminder', style: TextStyle(fontSize: 18, color: Colors.black54),),
+                          Text("The notification will be sent on the selected date at 9 AM.", style: design.captionText, textAlign: TextAlign.left),
                           Row(
                             children: [
                               Expanded(
@@ -300,7 +305,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                       ),
                     ),
 
-                    _reminder == 1? SizedBox(height: 20): SizedBox(height: 0),
+                    _reminder == 1? SizedBox(height: 15): SizedBox(height: 0),
 
                     _reminder == 1
                       ?TextFormField(
@@ -308,6 +313,9 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                         controller: checklistReminderDateCtrl,
                         decoration: InputDecoration(
                           labelText: "Remind Date*",
+                          labelStyle: TextStyle(
+                            fontSize: 18,
+                          ),
                           prefixIcon: Icon(Icons.calendar_today),
                           enabledBorder: OutlineInputBorder(
                             borderSide:  BorderSide.none
@@ -327,7 +335,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                       )
                       :Text(""),
 
-                    _reminder == 1? SizedBox(height: 20): SizedBox(height: 0),
+                    _reminder == 1? SizedBox(height: 25): SizedBox(height: 0),
 
                     SizedBox(
                       child: Column(
@@ -337,12 +345,17 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
 
-                              Text("Items"),
+                              Text("Items", style: TextStyle(fontSize: 18, color: Colors.black54)),
 
                               ElevatedButton.icon(
                                 onPressed: _addItem,
-                                icon: Icon(Icons.add),
+                                icon: Icon(Icons.add, color: Colors.black),
                                 label: Text("Add Item"),
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(130, 30),
+                                  backgroundColor: design.primaryColor,
+                                  foregroundColor: Colors.black,
+                                )
                               )
 
                             ],
@@ -361,8 +374,16 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                         controller: itemCtrl[index],
                                         decoration: InputDecoration(
                                           labelText: 'Item ${index + 1}',
+                                          hintText: 'Enter item',
                                           border: OutlineInputBorder(),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: itemCtrl[index].text.isEmpty ? Colors.grey : Colors.blueAccent,
+                                              width: 1.5
+                                            ),
+                                          ),
                                         ),
+                                        style: TextStyle(color: Colors.black), // Text color
                                       ),
                                     ),
                                     IconButton(
@@ -373,12 +394,13 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                 ),
                               );
                             }),
-                          ),
+                          )
+
                         ],
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    SizedBox(height: 50),
 
                     Align(
                       alignment: Alignment.bottomCenter,
@@ -463,7 +485,19 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                 );
                               }
                             },
-                            child: Text(widget.checklistType == "create" ? "Create Checklist" : "Save"),
+                            child: Text(widget.checklistType == "create" ? "Create" : "Save", style: design.contentText,),
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: Size(150, 45),
+                              backgroundColor: design.primaryColor,
+                              foregroundColor: Colors.black,
+                            ).copyWith(
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(color: Colors.black, width: 2),
+                                ),
+                              ),
+                            ),
                           )
                         ],
                       ),

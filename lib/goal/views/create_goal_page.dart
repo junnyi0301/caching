@@ -175,7 +175,18 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
                   Text(widget.goalType == "create"? "All field with * must be filled in." : "All field with * must be filled in.", style: design.captionText, textAlign: TextAlign.center),
                   Text(widget.goalType == "create"? "" : "Only goal name, goal description and friend contribution can be edit.", style: design.captionText, textAlign: TextAlign.center),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Text("Goal Details", style: design.contentText,),
+                        ],
+                      ),
+                    ),
+                  ),
 
                   TextFormField(
                     key: nameFieldKey,
@@ -194,14 +205,14 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     },
                   ),
 
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
 
                   TextFormField(
                     controller: goalDescCtrl,
                     decoration: const InputDecoration(labelText: 'Goal Description'),
                   ),
 
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
 
                   TextFormField(
                     readOnly: widget.goalType == "create" ? false : true,
@@ -235,7 +246,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     onChanged: (_) => calcDuration(),
                   ),
 
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
 
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
@@ -258,7 +269,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     value == null ? 'Please select commitment' : null,
                   ),
 
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
 
                   TextFormField(
                     readOnly: widget.goalType == "create" ? false : true,
@@ -294,15 +305,43 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     onChanged: (_) => calcDuration(),
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 35),
 
-                  Text(
-                    _commitment == 'by Daily Amount'
-                        ? "Duration: ${_duration.toStringAsFixed(0)} day(s)"
-                        : "Duration: ${_duration.toStringAsFixed(0)} month(s)",
+                  Container(
+                    width: 235,
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(12)), // Fixed parentheses
+                      border: Border.all(
+                        color: design.primaryColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          _commitment == 'by Daily Amount'
+                              ? "Duration: ${_duration.toStringAsFixed(0)} day(s)"
+                              : "Duration: ${_duration.toStringAsFixed(0)} month(s)",
+                          style: design.contentText,
+                        ),
+                      ],
+                    ),
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 50),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Text("Collaborator", style: design.contentText,),
+                        ],
+                      ),
+                    ),
+                  ),
 
                   Row(
                     children: [
@@ -315,7 +354,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.search),
+                        icon: const Icon(Icons.search, color: Colors.black,),
                         onPressed: searchFriend,
                       ),
                     ],
@@ -330,11 +369,20 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                       children: selectedFriends.map((friend) {
                         return Chip(
                           label: Text(friend['name']),
+                          backgroundColor: design.secondaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: Colors.black,
+                              width: 1.5,
+                            ),
+                          ),
                           onDeleted: () {
                             setState(() {
                               selectedFriends.remove(friend);
                             });
                           },
+                          deleteIconColor: Colors.red,
                         );
                       }).toList(),
                     ),
@@ -343,24 +391,64 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   SizedBox(height: 15),
 
                   filteredFriends.isEmpty
-                      ? Center(child: Text('Friend not found'))
-                      : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: filteredFriends.length,
-                    itemBuilder: (context, index) {
-                      final friend = filteredFriends[index];
-                      return ListTile(
-                        title: Text(friend['name']),
-                        onTap: () => selectFriend(friend),
-                      );
-                    },
+                      ? Center(
+                    child: Text(
+                      'Friend not found',
+                    ),
+                  )
+                      : Align(
+                    alignment: Alignment.centerLeft, // Align to the left
+                    child: Container(
+                      width: 235,
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      decoration: BoxDecoration(
+                        color: design.secondaryColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(0),
+                          topRight: Radius.circular(0),
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                        border: Border.all(
+                          color: design.primaryColor,
+                          width: 2,
+                        ),
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredFriends.length,
+                        itemBuilder: (context, index) {
+                          final friend = filteredFriends[index];
+                          return Column(
+                            children: [
+                              ListTile(
+                                visualDensity: VisualDensity(vertical: -3),
+                                title: Text(friend['name']),
+                                onTap: () => selectFriend(friend),
+                              ),
+                              if (index != filteredFriends.length - 1)
+                                Divider(
+                                  color: design.primaryColor,
+                                  thickness: 2,
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
                   ),
 
-                  widget.goalType == "create"? Text(" "): Text("Please note that the contributions of a removed member will also be deleted."),
+                  SizedBox(height: 40,),
 
-                  Text(_errorMsg, style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),
+                  widget.goalType == "create"
+                    ? Text(_errorMsg, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12,color: Colors.red), textAlign: TextAlign.center,)
+                    : Text(
+                      "Please note that the contributions of a removed member will also be deleted.",
+                      style: design.captionText,
+                      textAlign: TextAlign.center,
+                    ),
 
-                  SizedBox(height: 5,),
+                  SizedBox(height: 10),
 
                   ElevatedButton(
                     onPressed: () async {
@@ -481,7 +569,19 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         );
                       }
                     },
-                    child: Text(widget.goalType == "create" ? "Create Goal" : "Save"),
+                    child: Text(widget.goalType == "create" ? "Create" : "Save", style: design.contentText,),
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: Size(150, 45),
+                      backgroundColor: design.primaryColor,
+                      foregroundColor: Colors.black,
+                    ).copyWith(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.black, width: 2),
+                        ),
+                      ),
+                    ),
                   )
 
                 ],

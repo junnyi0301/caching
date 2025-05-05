@@ -35,12 +35,15 @@ class ChecklistBlock extends StatefulWidget {
 class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObserver {
 
   String _latestChecklistStatus = "";
+  bool _existReminder = true;
   bool _checkingPermissionAfterSettings = false;
 
   @override
   void initState() {
     super.initState();
     _latestChecklistStatus = widget.checklistStatus;
+    _existReminder = widget.checklistDate.isNotEmpty;
+    //print(_existReminder);
     WidgetsBinding.instance.addObserver(this);
     // print(widget.checklistTitle);
     // print(widget.checklistStatus);
@@ -165,6 +168,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
       if (_picked != null) {
         String formattedDate = DateFormat('yyyy-MM-dd').format(_picked);
         await _checklistService.updateChecklistDate(widget.checklistID, formattedDate);
+        _existReminder = true;
 
         NotificationService().cancelAllNotification();
 
@@ -209,7 +213,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
                       GestureDetector(
                         onTap: changeDate,
-                        child: widget.checklistDate.isEmpty
+                        child: _existReminder == false
                             ? Text("")
                             : Text(widget.checklistDate, style: design.contentText,),
                       ),
@@ -218,7 +222,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
                       GestureDetector(
                         onTap: updateReminder,
-                        child: widget.checklistDate.isEmpty
+                        child: _existReminder == false
                             ? Image.asset(
                           'assets/images/close_reminder.png',
                           height: 22,
@@ -233,7 +237,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
                       SizedBox(width: 1),
 
-                      IconButton(onPressed: delChecklistDialog, icon: Icon(Icons.delete),),
+                      IconButton(onPressed: delChecklistDialog, icon: Icon(Icons.delete, color: Colors.red),),
                     ],
                   ),
 
@@ -248,15 +252,27 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                       child: Column(
                         children: [
                           ElevatedButton(
-                              onPressed: (){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CreateChecklistPage(checklistType: "edit", checklistID: widget.checklistID))
-                                ).then((_){
-                                  print("reload");
-                                  reloadPage();
-                                });
-                              }, child: Text("Edit Checklist")
+                            onPressed: (){
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CreateChecklistPage(checklistType: "edit", checklistID: widget.checklistID))
+                              ).then((_){
+                                print("reload");
+                                reloadPage();
+                              });
+                            }, child: Text("Edit", style: design.contentText,),
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: Size(100, 45),
+                              backgroundColor: design.primaryColor,
+                              foregroundColor: Colors.black,
+                            ).copyWith(
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(color: Colors.black, width: 2),
+                                ),
+                              ),
+                            ),
                           )
                         ],
                     ),
@@ -300,6 +316,11 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                 });
 
                 if(_latestChecklistStatus == "Completed"){
+
+                  setState(() {
+                    _existReminder = false;
+                  });
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Congratulation! You have completed ${widget.checklistTitle}!')),
                   );
