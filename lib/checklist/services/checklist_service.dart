@@ -261,9 +261,16 @@ class ChecklistService{
           .get();
 
       if (checklistSnapshot.exists) {
+
+        if(newDate == ""){
+          await NotificationService().cancelChecklistNotification(checklistID.hashCode);
+          await NotificationService().debugPrintPendingNotifications();
+        }
+
         await _firestore.collection("checklist").doc(currentUserID).collection("userChecklist").doc(checklistID).update({
           "ChecklistDate": newDate,
         });
+
       } else {
         print("Checklist $checklistID not found.");
       }
@@ -426,14 +433,17 @@ class ChecklistService{
             scheduledTime: scheduleDateTime
         );
 
+        DateTime now = DateTime.now();
+
         await NotificationService().scheduleNotification(
             id: 0,
             title: "Test",
             body: "Remember to complete your $title by today!",
             payload: checklistData["ChecklistDate"],
-            scheduledTime: DateTime.now().add(Duration(seconds: 10))
+            scheduledTime: now.add(Duration(seconds: 20))
         );
-        print("Now: ${DateTime.now()}");
+        print("Schdule Noti: ${now.add(Duration(seconds: 20))}");
+        print("Now: ${now}");
 
         await NotificationService().debugPrintPendingNotifications();
         print("Reminder save successfully");

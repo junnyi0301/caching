@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -37,9 +36,43 @@ class NotificationService {
 
   notificationDetails(){
     return const NotificationDetails(
-      android: AndroidNotificationDetails("channelId", "channelName", importance: Importance.max, priority: Priority.high),
+      android: AndroidNotificationDetails(
+          "channelId",
+          "channelName",
+          importance: Importance.max,
+          priority: Priority.high
+      ),
       iOS: DarwinNotificationDetails()
     );
+  }
+
+  Future<bool> requestNotificationPermission() async {
+
+    if (Platform.isAndroid) {
+      final status = await Permission.notification.status;
+
+      if (!status.isGranted) {
+        final result = await Permission.notification.request();
+        return result.isGranted;
+      }
+
+      return true; // Already granted
+    }
+
+    if (Platform.isIOS) {
+      final iosPlugin = notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+
+      final bool? granted = await iosPlugin?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      return granted ?? false;
+    }
+
+    return true; // Fallback for other platforms
   }
 
   Future directShowNotification({int id = 0, String? title, String? body, String? payload}) async{
@@ -47,13 +80,6 @@ class NotificationService {
       id, title, body, await notificationDetails()
     );
   }
-
-  // Future<bool> get hasNotificationPermission async {
-  //   if (Platform.isAndroid) {
-  //     return (await Permission.notification.status).isGranted;
-  //   }
-  //   return true; // iOS handles this during initialization
-  // }
 
   Future<void> scheduleNotification({
     required int id,
@@ -63,6 +89,7 @@ class NotificationService {
     required DateTime scheduledTime,
   }) async {
     print("Get Date Time: $scheduledTime");
+
     await notificationsPlugin.zonedSchedule(
       id,
       title,

@@ -6,9 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:caching/utilities/noti_service.dart';
 
 import 'package:caching/utilities/notification.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 final design = Design();
 final ChecklistService _checklistService = ChecklistService();
+
+final notificationService = NotificationService();
 //final NotiService _notiService = NotiService();
 
 class CreateChecklistPage extends StatefulWidget {
@@ -26,7 +29,7 @@ class CreateChecklistPage extends StatefulWidget {
   State<CreateChecklistPage> createState() => _CreateChecklistPageState();
 }
 
-class _CreateChecklistPageState extends State<CreateChecklistPage> {
+class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _focusNode = FocusNode();
 
@@ -40,14 +43,24 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
   final GlobalKey<FormFieldState> titleFieldKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> dateFieldKey = GlobalKey<FormFieldState>();
 
+  bool _checkingPermissionAfterSettings = false;
+
+
   @override
   void initState(){
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _addItem();
 
     if(widget.checklistType == "edit"){
       loadChecklistData();
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> waitFunc(String checklistID) async{
@@ -160,6 +173,44 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
     await _checklistService.updateItem(widget.checklistID, item);
     await _checklistService.updateChecklistReminder(widget.checklistID);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_checkingPermissionAfterSettings && state == AppLifecycleState.resumed) {
+      // User returned from settings, check permission again
+      notificationService.requestNotificationPermission().then((granted) {
+        if (granted) {
+          // Permission granted
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Notification permission granted!")),
+          );
+        } else {
+          // Still denied
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Notification permission still denied.")),
+          );
+        }
+
+        _checkingPermissionAfterSettings = false;
+      });
+    }
+  }
+
+  Future<bool> _handlePermissionRequest() async {
+    bool granted = await notificationService.requestNotificationPermission();
+
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Redirecting to settings...")),
+      );
+      _checkingPermissionAfterSettings = true;
+      openAppSettings();
+
+      return false;
+    } else {
+      return true;
+    }
   }
 
   @override
@@ -346,6 +397,12 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> {
 
                                 if (_reminder == 1) {
                                   print("Run Notification");
+
+                                  bool proceed = await _handlePermissionRequest();
+                                  if(proceed == false){
+                                    return;
+                                  }
+
                                   NotificationService().cancelAllNotification();
 
                                   await NotificationService().directShowNotification(

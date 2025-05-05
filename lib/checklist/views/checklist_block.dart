@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../utilities/notification.dart';
 import 'checklist_page.dart';
 import 'create_checklist_page.dart';
 import 'package:intl/intl.dart';
@@ -30,17 +32,25 @@ class ChecklistBlock extends StatefulWidget {
   State<ChecklistBlock> createState() => _ChecklistBlockState();
 }
 
-class _ChecklistBlockState extends State<ChecklistBlock> {
-
+class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObserver {
 
   String _latestChecklistStatus = "";
+  bool _checkingPermissionAfterSettings = false;
+
   @override
   void initState() {
     super.initState();
     _latestChecklistStatus = widget.checklistStatus;
-    print(widget.checklistTitle);
-    print(widget.checklistStatus);
-    print(_latestChecklistStatus);
+    WidgetsBinding.instance.addObserver(this);
+    // print(widget.checklistTitle);
+    // print(widget.checklistStatus);
+    // print(_latestChecklistStatus);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -95,7 +105,51 @@ class _ChecklistBlockState extends State<ChecklistBlock> {
       );
     }
 
+    @override
+    void didChangeAppLifecycleState(AppLifecycleState state) {
+      if (_checkingPermissionAfterSettings && state == AppLifecycleState.resumed) {
+        // User returned from settings, check permission again
+        notificationService.requestNotificationPermission().then((granted) {
+          if (granted) {
+            // Permission granted
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Notification permission granted!")),
+            );
+          } else {
+            // Still denied
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Notification permission still denied.")),
+            );
+          }
+
+          _checkingPermissionAfterSettings = false;
+        });
+      }
+    }
+
+    Future<bool> _handlePermissionRequest() async {
+      bool granted = await notificationService.requestNotificationPermission();
+
+      if (!granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Redirecting to settings...")),
+        );
+        _checkingPermissionAfterSettings = true;
+        openAppSettings();
+
+        return false;
+      } else {
+        return true;
+      }
+    }
+
     void changeDate() async{
+
+      bool proceed = await _handlePermissionRequest();
+      if(proceed == false){
+        return;
+      }
+
       final today = DateTime.now();
       final tomorrow = DateTime(today.year, today.month, today.day + 1);
       final DateTime? _picked = await showDatePicker(
@@ -111,6 +165,15 @@ class _ChecklistBlockState extends State<ChecklistBlock> {
       if (_picked != null) {
         String formattedDate = DateFormat('yyyy-MM-dd').format(_picked);
         await _checklistService.updateChecklistDate(widget.checklistID, formattedDate);
+
+        NotificationService().cancelAllNotification();
+
+        await NotificationService().directShowNotification(
+          title: "Cachingg Checklist Reminder",
+          body: "You had set a reminder on ${DateFormat('dd-MM-yyyy').format(_picked)} 9am. Click to check more.",
+        );
+
+        await _checklistService.updateChecklistReminder(widget.checklistID);
         reloadPage();
       }
     }
