@@ -45,8 +45,13 @@ class FriendService{
     String currentUserID = _auth.currentUser!.uid;
     String receiverID = friendID;
 
+    List<String> ids = [currentUserID, receiverID];
+    ids.sort();
+    String chatRoomID = ids.join("_");
+
     await _firestore.collection("friendsList").doc(currentUserID).collection("friends").doc(receiverID).delete();
     await _firestore.collection("friendsList").doc(receiverID).collection("friends").doc(currentUserID).delete();
+    await _firestore.collection("chat_rooms").doc(chatRoomID).delete();
   }
 
   //Get friend requests

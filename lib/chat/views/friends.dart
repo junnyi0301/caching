@@ -1,4 +1,5 @@
 import 'package:caching/auth/auth_service.dart';
+import 'package:caching/bottomNav.dart';
 import 'package:caching/chat/views/add_friend_tile.dart';
 import 'package:caching/chat/services/chat_service.dart';
 import 'package:caching/chat/services/friends_service.dart';
@@ -52,6 +53,7 @@ class _FriendsPageState extends State<FriendsPage> {
           title: Text("Friends", style: design.titleText),
         ),
         backgroundColor: Color(0xFFE7EEFD),
+        bottomNavigationBar: BottomNav(currentIndex: 0,),
         body: Column(children: [
           TabBar(tabs: [
             Tab(
@@ -167,7 +169,6 @@ class _FriendsPageState extends State<FriendsPage> {
                 itemBuilder: (context, index) {
                   var data = snapshot.data!.docs[index].data();
                   bool isAlreadyFriends = myFriends.contains(data["uid"]);
-                  print(isAlreadyFriends);
                   return AddFriendTile(isFriend: isAlreadyFriends, name: data["name"], onTap: () => addFriend(data["uid"]));
                 });
           });
