@@ -216,24 +216,32 @@ class _GoalBlockState extends State<GoalBlock> {
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    progress > 0 ?
+                    progress > 0
+                        ?
                     Container(
-                      width: progress * 250,
+                      width: ((){
+                        double colorPercentage = progress * 250;
+                        if (colorPercentage < 8){
+                          colorPercentage = 8;
+                        }
+                        print("color Percentage: $colorPercentage");
+                        return colorPercentage;
+                      })(),
                       height: 20,
                       decoration: BoxDecoration(
                         color: design.secondaryButton,
                         border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ): Container(
                       width: progress * 250,
                       height: 20,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ],
@@ -352,6 +360,7 @@ class _GoalBlockState extends State<GoalBlock> {
           return Text("No contributions found.");
         } else {
           List<Map<String, dynamic>> contributions = snapshot.data!;
+          contributions.sort((a, b) => b["totalContribution"].compareTo(a["totalContribution"]));
 
           return ListView.builder(
             shrinkWrap: true,
@@ -380,28 +389,40 @@ class _GoalBlockState extends State<GoalBlock> {
                         children: [
                           Expanded(
                             flex: 7,
-                            child:
-                              Text(
-                                userName,
-                                style: design.contentText,
-                                textAlign: TextAlign.start,
-                              ),
+                            child: Text(
+                              userName,
+                              style: design.contentText,
+                              textAlign: TextAlign.start,
+                            ),
                           ),
                           Expanded(
                             flex: 3,
-                            child:
-                              widget.status == "Active"
-                                  ?Text(
-                                    "${((totalContribution / widget.targetAmt) * 100).toStringAsFixed(0)} %",
-                                    style: design.contentText,
-                                    textAlign: TextAlign.end,
-                                  )
-                                  :Text(
-                                    "${((totalContribution / widget.ttlSaveAmount) * 100).toStringAsFixed(0)} %",
-                                    style: design.contentText,
-                                    textAlign: TextAlign.end,
-                                  ),
+                            child: Text(
+                              (() {
+                                double percentage = 0;
+
+                                widget.status == "Active"
+                                    ? percentage = (totalContribution / widget.targetAmt) * 100
+                                    : percentage = (totalContribution / widget.ttlSaveAmount) * 100;
+
+                                int displayPercent = 0;
+                                if (percentage == 0){
+                                  displayPercent = 0;
+                                } else if (percentage > 0 && percentage <= 1){
+                                  displayPercent = 1;
+                                } else if (percentage > 100){
+                                  displayPercent = 100;
+                                } else{
+                                  displayPercent = percentage.round();
+                                }
+
+                                return "$displayPercent %";
+                              })(),
+                              style: design.contentText,
+                              textAlign: TextAlign.end,
+                            ),
                           ),
+
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
