@@ -182,158 +182,166 @@ class _GoalBlockState extends State<GoalBlock> {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Text(widget.goalName, style: design.subtitleText),
+            child: Center(
+              child: Column(
+                children: [
+                  Text(widget.goalName, style: design.subtitleText),
 
-                SizedBox(height: 5),
-                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
-                SizedBox(height: 5),
+                  SizedBox(height: 5),
+                  Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
+                  SizedBox(height: 5),
 
-                Text("Goal Amount:", style: design.contentText),
-                Text("RM ${widget.targetAmt.toStringAsFixed(2)}", style: design.subtitleText),
+                  Text("Goal Amount:", style: design.contentText),
+                  Text("RM ${widget.targetAmt.toStringAsFixed(2)}", style: design.subtitleText),
 
-                SizedBox(height: 10),
+                  SizedBox(height: 10),
 
-                Text("Total Savings:", style: design.contentText),
-                Text("RM ${widget.ttlSaveAmount.toStringAsFixed(2)}", style: design.subtitleText,),
+                  Text("Total Savings:", style: design.contentText),
+                  Text("RM ${widget.ttlSaveAmount.toStringAsFixed(2)}", style: design.subtitleText,),
 
-                SizedBox(height: 10),
+                  SizedBox(height: 10),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end, // Distribute content to left and right
-                  children: [
-                    Text("${progressPercent.toStringAsFixed(2)}%", style: design.contentText),
-                  ],
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // Distribute content to left and right
+                    children: [
+                      Text("${progressPercent.toStringAsFixed(2)}%", style: design.contentText),
+                    ],
+                  ),
 
-                Stack(
-                  children: [
-                    Container(
-                      width: 250,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
+                  Stack(
+                    children: [
+                      Container(
+                        width: 250,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
+                      progress > 0
+                          ?
+                      Container(
+                        width: ((){
+                          double colorPercentage = progress * 250;
+                          if (colorPercentage < 8){
+                            colorPercentage = 8;
+                          }
+                          print("color Percentage: $colorPercentage");
+                          return colorPercentage;
+                        })(),
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: design.secondaryButton,
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ): Container(
+                        width: progress * 250,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 10),
+
+                  Text(widget.goalDescr, style: design.captionText, textAlign: TextAlign.justify,),
+                  SizedBox(height: 20),
+
+                  // Contribution List
+                  Text("Contribution", style: design.contentText, textAlign: TextAlign.center,),
+                  _contributionList(),
+
+                  SizedBox(height: 5),
+                  Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
+                  SizedBox(height: 5),
+
+                  // Your Own Contribution
+                  Text("You have Contributed:", style: design.captionText),
+                  SizedBox(height: 5),
+                  FutureBuilder<double>(
+                    future: widget.commitment == "by Daily Amount"
+                        ? _goalService.getDailyContribution(widget.goalID)
+                        : _goalService.getMonthlyContribution(widget.goalID),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Loading...", style: design.contentText);
+                      } else if (snapshot.hasError) {
+                        return Text("Error loading your contribution.", style: design.contentText);
+                      } else {
+                        double ownContribute = snapshot.data ?? 0.0;
+                        return
+                          Text(
+                            "RM ${ownContribute.toStringAsFixed(2)} / RM ${widget.targetAmt.toStringAsFixed(2)}",
+                            style: design.contentText,
+                          );
+                      }
+                    },
+                  ),
+                  Text(type, style: design.contentText,),
+
+                  SizedBox(height: 5),
+                  Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
+                  SizedBox(height: 5),
+
+                  // Example of total contribution (optional)
+                  Text("Total Contribute", style: design.contentText),
+                  Text(
+                    "RM ${(widget.personInvolve[currentUserID]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
+                    style: design.contentText,
+                  ),
+
+                  SizedBox(height: 10),
+
+                  ElevatedButton(
+                    onPressed: topUpDialog,
+                    child: Text("Contribute", style: design.contentText,),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: Size(250, 20),
+                        backgroundColor: design.primaryColor,
+                        foregroundColor: Colors.black
                     ),
-                    progress > 0 ?
-                    Container(
-                      width: progress * 250,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: design.secondaryButton,
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ): Container(
-                      width: progress * 250,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                  ),
+
+                  SizedBox(height: 5),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "edit",goalID: widget.goalID,)),
+                      ).then((_) {
+                        reloadPage();
+                      });
+                    },
+                    child: Text('Edit', style: design.contentText),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: Size(250, 20),
+                        backgroundColor: design.primaryColor,
+                        foregroundColor: Colors.black
                     ),
-                  ],
-                ),
-
-                SizedBox(height: 10),
-
-                Text(widget.goalDescr, style: design.captionText, textAlign: TextAlign.justify,),
-                SizedBox(height: 20),
-
-                // Contribution List
-                Text("Contribution", style: design.contentText, textAlign: TextAlign.center,),
-                _contributionList(),
-
-                SizedBox(height: 5),
-                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
-                SizedBox(height: 5),
-
-                // Your Own Contribution
-                Text("You have Contributed:", style: design.captionText),
-                SizedBox(height: 5),
-                FutureBuilder<double>(
-                  future: widget.commitment == "by Daily Amount"
-                      ? _goalService.getDailyContribution(widget.goalID)
-                      : _goalService.getMonthlyContribution(widget.goalID),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading...", style: design.contentText);
-                    } else if (snapshot.hasError) {
-                      return Text("Error loading your contribution.", style: design.contentText);
-                    } else {
-                      double ownContribute = snapshot.data ?? 0.0;
-                      return
-                        Text(
-                          "RM ${ownContribute.toStringAsFixed(2)} / RM ${widget.targetAmt.toStringAsFixed(2)}",
-                          style: design.contentText,
-                        );
-                    }
-                  },
-                ),
-                Text(type, style: design.contentText,),
-
-                SizedBox(height: 5),
-                Divider(color: widget.status == "Active"? Colors.orange: Colors.white),
-                SizedBox(height: 5),
-
-                // Example of total contribution (optional)
-                Text("Total Contribute", style: design.contentText),
-                Text(
-                  "RM ${(widget.personInvolve[currentUserID]?["TotalContribution"] ?? 0.0).toStringAsFixed(2)}",
-                  style: design.contentText,
-                ),
-
-                SizedBox(height: 10),
-
-                ElevatedButton(
-                  onPressed: topUpDialog,
-                  child: Text("Contribute", style: design.contentText,),
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: Size(250, 20),
-                    backgroundColor: design.primaryColor,
-                    foregroundColor: Colors.black
                   ),
-                ),
 
-                SizedBox(height: 5),
+                  SizedBox(height: 5),
 
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateGoalPage(goalType: "edit",goalID: widget.goalID,)),
-                    ).then((_) {
-                      reloadPage();
-                    });
-                  },
-                  child: Text('Edit', style: design.contentText),
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: Size(250, 20),
-                      backgroundColor: design.primaryColor,
-                      foregroundColor: Colors.black
-                  ),
-                ),
-
-                SizedBox(height: 5),
-
-                ElevatedButton(
-                  onPressed: delGoalDialog,
-                  child: Text("Delete", style: design.contentText),
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: Size(250, 20),
-                      backgroundColor: design.secondaryButton,
-                      foregroundColor: Colors.black
-                  ),
-                )
+                  ElevatedButton(
+                    onPressed: delGoalDialog,
+                    child: Text("Delete", style: design.contentText),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: Size(250, 20),
+                        backgroundColor: design.secondaryButton,
+                        foregroundColor: Colors.black
+                    ),
+                  )
 
 
-              ],
-            ),
-          )
+                ],
+              ),
+            )
 
         ),
       ),
@@ -352,6 +360,7 @@ class _GoalBlockState extends State<GoalBlock> {
           return Text("No contributions found.");
         } else {
           List<Map<String, dynamic>> contributions = snapshot.data!;
+          contributions.sort((a, b) => b["totalContribution"].compareTo(a["totalContribution"]));
 
           return ListView.builder(
             shrinkWrap: true,
@@ -380,28 +389,40 @@ class _GoalBlockState extends State<GoalBlock> {
                         children: [
                           Expanded(
                             flex: 7,
-                            child:
-                              Text(
-                                userName,
-                                style: design.contentText,
-                                textAlign: TextAlign.start,
-                              ),
+                            child: Text(
+                              userName,
+                              style: design.contentText,
+                              textAlign: TextAlign.start,
+                            ),
                           ),
                           Expanded(
                             flex: 3,
-                            child:
-                              widget.status == "Active"
-                                  ?Text(
-                                    "${((totalContribution / widget.targetAmt) * 100).toStringAsFixed(0)} %",
-                                    style: design.contentText,
-                                    textAlign: TextAlign.end,
-                                  )
-                                  :Text(
-                                    "${((totalContribution / widget.ttlSaveAmount) * 100).toStringAsFixed(0)} %",
-                                    style: design.contentText,
-                                    textAlign: TextAlign.end,
-                                  ),
+                            child: Text(
+                              (() {
+                                double percentage = 0;
+
+                                widget.status == "Active"
+                                    ? percentage = (totalContribution / widget.targetAmt) * 100
+                                    : percentage = (totalContribution / widget.ttlSaveAmount) * 100;
+
+                                int displayPercent = 0;
+                                if (percentage == 0){
+                                  displayPercent = 0;
+                                } else if (percentage > 0 && percentage <= 1){
+                                  displayPercent = 1;
+                                } else if (percentage > 100){
+                                  displayPercent = 100;
+                                } else{
+                                  displayPercent = percentage.round();
+                                }
+
+                                return "$displayPercent %";
+                              })(),
+                              style: design.contentText,
+                              textAlign: TextAlign.end,
+                            ),
                           ),
+
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
