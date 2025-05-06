@@ -71,7 +71,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
         });
 
         print("checklistStatusVar: $_latestChecklistStatus");
-        print("I am reloading");
+        print("Done Reload");
       }
     }
 
