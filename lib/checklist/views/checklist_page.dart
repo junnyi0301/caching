@@ -110,9 +110,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   )
               ),
 
-              ElevatedButton(onPressed: (){
-                print(DateTime.now());
-              }, child: Text("Now"))
+              // ElevatedButton(onPressed: (){
+              //   print(DateTime.now());
+              // }, child: Text("Now"))
             ],
           ),
         ),

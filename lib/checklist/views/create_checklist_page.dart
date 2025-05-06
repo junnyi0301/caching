@@ -471,7 +471,9 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                       SnackBar(content: Text('Please contain at least 1 item in checklist.')),
                                     );
                                   }
+
                                 }
+
                               }else{
 
                                 if (titleFieldKey.currentState?.hasError == true) {

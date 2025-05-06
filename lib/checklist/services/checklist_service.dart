@@ -384,15 +384,46 @@ class ChecklistService{
       }
 
       // check to add item
-      List<String> itemToAdd = [];
+      bool addItem = false;
       for (String nItem in newItem) {
-        if (!existingItem.contains(nItem)) {
-          itemToAdd.add(nItem);
-          print("Has Added: $itemToAdd");
+        bool found = false;
+
+        for (var entry in existingItemsMap.entries) {
+          String existingName = entry.value["ItemName"];
+          String existingStatus = entry.value["ItemStatus"];
+          String itemId = entry.key;
+
+          if (existingName == nItem) {
+            found = true;
+
+            if (existingStatus == "Inactive") {
+              // Reactivate the item
+              await updateItemStatus(checklistID, itemId, "Active");
+              print("Reactivated existing item: $nItem");
+            } else {
+              print("Item $nItem already active or completed.");
+            }
+
+            break; // stop searching once matched
+          }
+        }
+
+        if (!found) {
+          // Add new item if not found in existing list
+          await addNewItemIntoList(checklistID, [nItem]);
+          addItem = true;
+          print("Added new item: $nItem");
         }
       }
-      if (itemToAdd.isNotEmpty) {
-        await addNewItemIntoList(checklistID, itemToAdd);
+
+      if (addItem == true) {
+
+        bool hasCompleted = existingItemsMap.values.any((item) => item["ItemStatus"] == "Completed");
+
+        if (hasCompleted == true) {
+          await updateChecklistStatus(checklistID, "Active");
+        }
+
       }
 
     } catch (e) {

@@ -47,7 +47,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
     WidgetsBinding.instance.addObserver(this);
     // print(widget.checklistTitle);
     // print(widget.checklistStatus);
-    // print(_latestChecklistStatus);
+    //print("checklistStatus: $_latestChecklistStatus");
   }
 
   @override
@@ -62,6 +62,9 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
     void reloadPage(){
       if (widget.reload != null) {
         widget.reload!();
+        _latestChecklistStatus = widget.checklistStatus;
+        //print("checklistStatus: ${widget.checklistStatus}");
+        //print("checklistStatusVar: $_latestChecklistStatus");
       }
     }
 
@@ -185,6 +188,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
     void updateReminder() async {
       if (widget.checklistDate.isNotEmpty) {
         await _checklistService.updateChecklistDate(widget.checklistID, "");
+        _existReminder = false;
         reloadPage();
       } else {
         changeDate();
