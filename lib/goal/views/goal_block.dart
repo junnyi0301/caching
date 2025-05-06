@@ -72,7 +72,7 @@ class _GoalBlockState extends State<GoalBlock> {
 
     void topUpDialog() {
       AlertDialog topUpAlertDialog = AlertDialog(
-        title: const Text('Top Up Amount'),
+        title: const Text('Contribute Amount'),
         content: Form(
           key: _formKey,
           child: TextFormField(

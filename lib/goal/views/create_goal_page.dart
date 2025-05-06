@@ -316,7 +316,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   SizedBox(height: 35),
 
                   Container(
-                    width: 235,
+                    width: 280,
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: Colors.white,
