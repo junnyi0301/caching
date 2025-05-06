@@ -376,10 +376,12 @@ class ChecklistService{
       print(existingItem);
 
       // check to remove item
+      bool remItem = false;
       for (String existItem in existingItem) {
         if (!newItem.contains(existItem)) {
           String id = await getItemIDByName(checklistID, existItem);
           await updateItemStatus(checklistID, id, "Inactive");
+          remItem = true;
         }
       }
 
@@ -404,7 +406,7 @@ class ChecklistService{
               print("Item $nItem already active or completed.");
             }
 
-            break; // stop searching once matched
+            break;
           }
         }
 
@@ -424,6 +426,18 @@ class ChecklistService{
           await updateChecklistStatus(checklistID, "Active");
         }
 
+      } else if (remItem == true && addItem == false){
+
+        Map<String, dynamic> newChecklistData = await getSpecificChecklistItem(checklistID);
+
+        final newActiveItem = newChecklistData.entries.where((entry) =>
+        entry.value['ItemStatus'] == 'Active'
+        );
+
+        if(newActiveItem.isEmpty){
+          await updateChecklistStatus(checklistID, "Completed");
+          print("Checklist update to 'Completed'");
+        }
       }
 
     } catch (e) {

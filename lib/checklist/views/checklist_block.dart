@@ -59,12 +59,19 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
 
-    void reloadPage(){
+    void reloadPage() async{
       if (widget.reload != null) {
         widget.reload!();
-        _latestChecklistStatus = widget.checklistStatus;
-        //print("checklistStatus: ${widget.checklistStatus}");
-        //print("checklistStatusVar: $_latestChecklistStatus");
+
+        Map<String, dynamic> latestChecklistData = await _checklistService.getSpecificChecklist(widget.checklistID);
+
+        setState(() {
+          _latestChecklistStatus = latestChecklistData["ChecklistStatus"];
+          _existReminder = latestChecklistData["ChecklistDate"].toString().isNotEmpty;
+        });
+
+        print("checklistStatusVar: $_latestChecklistStatus");
+        print("I am reloading");
       }
     }
 
@@ -225,7 +232,15 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                       Spacer(),
 
                       GestureDetector(
-                        onTap: updateReminder,
+                        onTap: () {
+                          if (_latestChecklistStatus == "Completed") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('You cannot add reminder on completed checklist')),
+                            );
+                          } else {
+                            updateReminder();
+                          }
+                        },
                         child: _existReminder == false
                             ? Image.asset(
                           'assets/images/close_reminder.png',
