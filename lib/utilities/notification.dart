@@ -13,6 +13,12 @@ class NotificationService {
   Future<void> initNotification() async{
     tz.initializeTimeZones();
 
+    final malaysiaTimeZone = tz.getLocation('Asia/Kuala_Lumpur');
+    tz.setLocalLocation(malaysiaTimeZone);
+
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    print("TZDateTime: $now");
+
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('logo');
 
     const DarwinInitializationSettings initializationSettingsIOS =
@@ -83,7 +89,7 @@ class NotificationService {
 
   /// Set right date and time for notifications
   tz.TZDateTime _convertDate(int year, int month, int day) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+
     tz.TZDateTime scheduleDate = tz.TZDateTime(
       tz.local,
       year,
@@ -104,9 +110,7 @@ class NotificationService {
     required int year,
     required int month,
     required int day
-    //required DateTime scheduledTime,
   }) async {
-    //print("Get Date Time: $scheduledTime");
     print("Get year: $year");
     print("Get month: $month");
     print("Get day: $day");
@@ -119,8 +123,7 @@ class NotificationService {
       await notificationDetails(),
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      //uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime
+      matchDateTimeComponents: null,
     );
 
   }

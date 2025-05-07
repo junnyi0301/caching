@@ -426,6 +426,20 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                 }
 
                                 if (_reminder == 1) {
+
+                                  DateTime today = DateTime.now();
+                                  DateTime tomorrow = DateTime(today.year, today.month, today.day).add(Duration(days: 1));
+                                  DateTime dateSetted = DateTime.parse(checklistReminderDateCtrl.text);
+
+                                  if (dateSetted.isBefore(tomorrow)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Reminder already executed. Please change the reminder date or cancel the reminder."),
+                                      ),
+                                    );
+                                    return;
+                                  }
+
                                   print("Run Notification");
 
                                   bool proceed = await _handlePermissionRequest();
@@ -512,7 +526,6 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                         ],
                       ),
                     )
-
 
                   ],
                 ),

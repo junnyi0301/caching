@@ -13,7 +13,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   NotificationService().initNotification();
-  tz.initializeTimeZones();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
