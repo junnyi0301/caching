@@ -17,7 +17,6 @@ class NotificationService {
     tz.setLocalLocation(malaysiaTimeZone);
 
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    print("TZDateTime: $now");
 
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('logo');
 

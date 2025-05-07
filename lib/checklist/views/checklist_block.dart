@@ -3,7 +3,6 @@ import 'package:caching/utilities/design.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../utilities/notification.dart';
-import 'checklist_page.dart';
 import 'create_checklist_page.dart';
 import 'package:intl/intl.dart';
 

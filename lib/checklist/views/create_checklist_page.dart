@@ -1,10 +1,7 @@
-import 'package:caching/checklist/views/checklist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
 import 'package:intl/intl.dart';
-import 'package:caching/utilities/noti_service.dart';
-
 import 'package:caching/utilities/notification.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -12,7 +9,6 @@ final design = Design();
 final ChecklistService _checklistService = ChecklistService();
 
 final notificationService = NotificationService();
-//final NotiService _notiService = NotiService();
 
 class CreateChecklistPage extends StatefulWidget {
 

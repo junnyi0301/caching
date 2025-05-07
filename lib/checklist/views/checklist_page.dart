@@ -1,11 +1,9 @@
 import 'package:caching/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
-import 'package:caching/auth/auth_service.dart';
 import 'package:caching/checklist/views/create_checklist_page.dart';
 import 'package:caching/checklist/services/checklist_service.dart';
 import 'checklist_block.dart';
-import 'package:caching/utilities/noti_service.dart';
 
 final design = Design();
 
@@ -17,9 +15,7 @@ class ChecklistPage extends StatefulWidget {
 }
 
 class _ChecklistPageState extends State<ChecklistPage> {
-  final AuthService _authService = AuthService();
   final ChecklistService _checklistService = ChecklistService();
-  //final notiService = NotiService();
 
   List<Map<String, dynamic>> allChecklist = [];
 
@@ -35,10 +31,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
     });
   }
-
-  // void trying() async{
-  //   await NotiService().scheduleTestNotification();
-  // }
 
   @override
   Widget build(BuildContext context) {
