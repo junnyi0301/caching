@@ -1,8 +1,8 @@
 import 'package:caching/auth/auth_gate.dart';
-import 'package:caching/chat/views/friends.dart';
-import 'package:caching/checklist/views/checklist_page.dart';
-import 'package:caching/goal/views/create_goal_page.dart';
 import 'package:caching/goal/views/goal_page.dart';
+import 'package:caching/checklist/views/checklist_page.dart';
+import 'package:caching/cashflow/views/analysis.dart';
+import 'package:caching/chat/views/friends.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +33,7 @@ class BottomNav extends StatelessWidget {
             children: [
               _navIcon(context, Icons.list_alt, 0, "Goals", iconSize: 28),
               _navIcon(context, Icons.draw, 1, "Checklist", iconSize: 28),
-              const SizedBox(width: 40), // Spacer for center button
+              const SizedBox(width: 40),
               _navIcon(context, Icons.people, 3, "Friends", iconSize: 28),
               _navIcon(context, Icons.person, 4, "Profile", iconSize: 28),
             ],
@@ -47,9 +47,9 @@ class BottomNav extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               if (currentIndex != 2) {
-                // Navigator.pushReplacement(context, MaterialPageRoute(
-                //   builder: (context) => RecordPage(),
-                // ));
+                Navigator.pushReplacement(context, MaterialPageRoute(
+                  builder: (context) => AnalysisPg(),
+                ));
               }
             },
             child: Container(
