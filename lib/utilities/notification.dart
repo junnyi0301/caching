@@ -16,8 +16,6 @@ class NotificationService {
     final malaysiaTimeZone = tz.getLocation('Asia/Kuala_Lumpur');
     tz.setLocalLocation(malaysiaTimeZone);
 
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('logo');
 
     const DarwinInitializationSettings initializationSettingsIOS =

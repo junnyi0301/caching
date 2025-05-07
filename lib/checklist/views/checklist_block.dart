@@ -144,7 +144,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
       if (!granted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Redirecting to settings...")),
+          SnackBar(content: Text("Redirecting to settings.")),
         );
         _checkingPermissionAfterSettings = true;
         openAppSettings();
@@ -179,14 +179,17 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
         await _checklistService.updateChecklistDate(widget.checklistID, formattedDate);
         _existReminder = true;
 
-        NotificationService().cancelAllNotification();
-
         await NotificationService().directShowNotification(
           title: "Cachingg Checklist Reminder",
           body: "You had set a reminder on ${DateFormat('dd-MM-yyyy').format(_picked)} 9am. Click to check more.",
         );
 
         await _checklistService.updateChecklistReminder(widget.checklistID);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Reminder date updated successfully.')),
+        );
+
         reloadPage();
       }
     }
@@ -195,6 +198,11 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
       if (widget.checklistDate.isNotEmpty) {
         await _checklistService.updateChecklistDate(widget.checklistID, "");
         _existReminder = false;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Reminder denied successfully.')),
+        );
+
         reloadPage();
       } else {
         changeDate();
@@ -222,7 +230,9 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                       SizedBox(width: 15),
 
                       GestureDetector(
-                        onTap: changeDate,
+                        onTap: (){
+                          changeDate();
+                        },
                         child: _existReminder == false
                             ? Text("")
                             : Text(widget.checklistDate, style: design.contentText,),
@@ -255,7 +265,12 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
                       SizedBox(width: 1),
 
-                      IconButton(onPressed: delChecklistDialog, icon: Icon(Icons.delete, color: Colors.red),),
+                      IconButton(onPressed: (){
+                        delChecklistDialog();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Checklist deleted successfully.')),
+                        );
+                      }, icon: Icon(Icons.delete, color: Colors.red),),
                     ],
                   ),
 

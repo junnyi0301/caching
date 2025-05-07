@@ -197,9 +197,6 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
     bool granted = await notificationService.requestNotificationPermission();
 
     if (!granted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Redirecting to settings...")),
-      );
       _checkingPermissionAfterSettings = true;
       openAppSettings();
 
@@ -442,8 +439,6 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                   if(proceed == false){
                                     return;
                                   }
-
-                                  NotificationService().cancelAllNotification();
 
                                   await NotificationService().directShowNotification(
                                     title: "Cachingg Checklist Reminder",

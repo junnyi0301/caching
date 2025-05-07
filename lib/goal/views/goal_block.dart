@@ -135,9 +135,6 @@ class _GoalBlockState extends State<GoalBlock> {
     }
 
     void delGoalDialog() {
-      // Ensure goalName is not null or empty
-      print('Deleting Goal: "${widget.goalName}"');
-
       AlertDialog delGoalAlertDialog = AlertDialog(
         title: Text('Delete Goal'),
         content: Text("Are you sure to delete ${widget.goalName} ?"),
@@ -227,7 +224,6 @@ class _GoalBlockState extends State<GoalBlock> {
                         if (colorPercentage < 8){
                           colorPercentage = 8;
                         }
-                        print("color Percentage: $colorPercentage");
                         return colorPercentage;
                       })(),
                       height: 20,
@@ -298,7 +294,12 @@ class _GoalBlockState extends State<GoalBlock> {
                 SizedBox(height: 10),
 
                 ElevatedButton(
-                  onPressed: topUpDialog,
+                  onPressed: (){
+                    topUpDialog();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Contribution added successfully.')),
+                    );
+                  },
                   child: Text("Contribute", style: design.contentText,),
                   style: ElevatedButton.styleFrom(
                     fixedSize: Size(250, 20),
@@ -329,7 +330,12 @@ class _GoalBlockState extends State<GoalBlock> {
                 SizedBox(height: 5),
 
                 ElevatedButton(
-                  onPressed: delGoalDialog,
+                  onPressed: (){
+                    delGoalDialog();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Goal deleted successfully.')),
+                    );
+                  },
                   child: Text("Delete", style: design.contentText),
                   style: ElevatedButton.styleFrom(
                       fixedSize: Size(250, 20),
@@ -370,7 +376,6 @@ class _GoalBlockState extends State<GoalBlock> {
               final contribution = contributions[index];
               final String userID = contribution["userID"];
               final double totalContribution = contribution["totalContribution"];
-              print(totalContribution);
 
               return FutureBuilder<String?>(
                 future: _goalService.getUserNameByID(userID),
