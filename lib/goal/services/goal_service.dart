@@ -261,23 +261,23 @@ class GoalService {
       final currentDate = DateFormat('yyyy-MM-dd').format(now);
 
       Goal newGoal = Goal(
-        goalID: now.millisecondsSinceEpoch.toString(),
-        goalName: name,
-        goalDescr: descr,
-        targetAmt: target,
-        commitment: comm,
-        payAmt: pay,
-        duration: duration,
-        goalStatus: "Active",
-        personInvolve: {
-          currentUserID: {
-            "TotalContribution": 0,
-            currentDate.toString(): {
-              "Contribution": 0.00
+          goalID: now.millisecondsSinceEpoch.toString(),
+          goalName: name,
+          goalDescr: descr,
+          targetAmt: target,
+          commitment: comm,
+          payAmt: pay,
+          duration: duration,
+          goalStatus: "Active",
+          personInvolve: {
+            currentUserID: {
+              "TotalContribution": 0,
+              currentDate.toString(): {
+                "Contribution": 0.00
+              }
             }
-          }
-        },
-        ttlSaveAmount: 0
+          },
+          ttlSaveAmount: 0
       );
 
       await _firestore.collection("goal").doc(newGoal.goalID).set(newGoal.toMap());
