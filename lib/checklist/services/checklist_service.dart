@@ -461,13 +461,13 @@ class ChecklistService{
         print("Process Schedule Noti");
 
         final parts = checklistData["ChecklistDate"].split('-').map(int.parse).toList();
-        DateTime scheduleDateTime = DateTime(parts[0], parts[1], parts[2], 9, 0);
+        //DateTime scheduleDateTime = DateTime(parts[0], parts[1], parts[2], 9, 0);
 
         print(parts[0]);
         print(parts[1]);
         print(parts[2]);
         print(DateTime(parts[0], parts[1], parts[2], 9, 0));
-        print(scheduleDateTime);
+        //print(scheduleDateTime);
 
         String title = checklistData["ChecklistTitle"];
 
@@ -476,20 +476,22 @@ class ChecklistService{
             title: "Cachingg Chaecklist Reminder",
             body: "Remember to complete your $title by today!",
             payload: checklistData["ChecklistDate"],
-            scheduledTime: scheduleDateTime
+            year: parts[0],
+            month: parts[1],
+            day: parts[2]
         );
 
-        DateTime now = DateTime.now();
-
-        await NotificationService().scheduleNotification(
-            id: 0,
-            title: "Test",
-            body: "Remember to complete your $title by today!",
-            payload: checklistData["ChecklistDate"],
-            scheduledTime: now.add(Duration(seconds: 20))
-        );
-        print("Schdule Noti: ${now.add(Duration(seconds: 20))}");
-        print("Now: ${now}");
+        // DateTime now = DateTime.now();
+        //
+        // await NotificationService().scheduleNotification(
+        //     id: 0,
+        //     title: "Test",
+        //     body: "Remember to complete your $title by today!",
+        //     payload: checklistData["ChecklistDate"],
+        //     scheduledTime: now.add(Duration(seconds: 20))
+        // );
+        // print("Schdule Noti: ${now.add(Duration(seconds: 20))}");
+        // print("Now: ${now}");
 
         await NotificationService().debugPrintPendingNotifications();
         print("Reminder save successfully");

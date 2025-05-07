@@ -81,23 +81,46 @@ class NotificationService {
     );
   }
 
+  /// Set right date and time for notifications
+  tz.TZDateTime _convertDate(int year, int month, int day) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduleDate = tz.TZDateTime(
+      tz.local,
+      year,
+      month,
+      day,
+      9,
+      0,
+    );
+    
+    return scheduleDate;
+  }
+
   Future<void> scheduleNotification({
     required int id,
     required String title,
     required String body,
     required String payload,
-    required DateTime scheduledTime,
+    required int year,
+    required int month,
+    required int day
+    //required DateTime scheduledTime,
   }) async {
-    print("Get Date Time: $scheduledTime");
+    //print("Get Date Time: $scheduledTime");
+    print("Get year: $year");
+    print("Get month: $month");
+    print("Get day: $day");
 
     await notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
+      _convertDate(year, month, day),
       await notificationDetails(),
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      //uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.dateAndTime
     );
 
   }
