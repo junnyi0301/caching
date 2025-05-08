@@ -41,42 +41,45 @@ class _AnalysisPgState extends State<AnalysisPg> {
     return Map.fromEntries(sortedEntries);
   }
 
+  static const Map<String, Color> _categoryColors = {
+    'shops': Colors.blue,
+    'food': Colors.green,
+    'entertainment': Colors.orange,
+    'repairs': Colors.purple,
+    'health': Colors.red,
+    'travel': Colors.teal,
+    'transport': Colors.cyan,
+    'utility': Colors.pink,
+  };
+
+  Color _colorForCategory(String category) => _categoryColors[category.toLowerCase()] ?? Colors.grey.shade400;
+
   List<PieChartSectionData> _buildChartSections(
       Map<String, Map<String, dynamic>> catData) {
-        if (catData.isEmpty) {
-          return [
-            PieChartSectionData(
-              value: 1,
-              color: Colors.grey.shade300,
-              radius: 35,
-              title: '',
-            ),
-          ];
-        }
-        final total = catData.values.fold<double>(0, (t, e) => t + (e['sum'] as double));
-        final List<Color> _chartColors = [
-          Colors.blue,
-          Colors.green,
-          Colors.orange,
-          Colors.purple,
-          Colors.red,
-          Colors.teal,
-          Colors.cyan,
-          Colors.pink,
-        ];
-        int idx = 0;
-        return catData.entries.map((entry) {
-          final sum = entry.value['sum'] as double;
-          final pct = total > 0 ? (sum / total * 100) : 0.0;
-          return PieChartSectionData(
-            value: sum,
-            color: _chartColors[idx++ % _chartColors.length],
-            radius: 35,
-            title: '${pct.toStringAsFixed(1)}%',
-            titleStyle: design.pieChartText
-          );
-        }).toList();
-      }
+    if (catData.isEmpty) {
+      return [
+        PieChartSectionData(
+          value: 1,
+          color: Colors.grey.shade300,
+          radius: 35,
+          title: '',
+        ),
+      ];
+    }
+    final total = catData.values.fold<double>(0, (t, e) => t + (e['sum'] as double));
+    return catData.entries.map((entry) {
+      final sum = entry.value['sum'] as double;
+      final pct = total > 0 ? (sum / total * 100) : 0.0;
+      final cat = entry.key.toLowerCase();
+      return PieChartSectionData(
+        value: sum,
+        color: _colorForCategory(cat),
+        radius: 35,
+        title: '${pct.toStringAsFixed(1)}%',
+        titleStyle: design.pieChartText,
+      );
+    }).toList();
+  }
 
   IconData _iconForCategory(String category) {
     switch (category.toLowerCase()) {
@@ -220,18 +223,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                     final pct = totalSpending > 0
                                         ? sum / totalSpending * 100
                                         : 0;
-                                    final idx =
-                                    catData.keys.toList().indexOf(cat);
-                                    final bg = [
-                                      Colors.blue,
-                                      Colors.green,
-                                      Colors.orange,
-                                      Colors.purple,
-                                      Colors.red,
-                                      Colors.teal,
-                                      Colors.cyan,
-                                      Colors.pink
-                                    ][idx % 8];
+                                    final color = _colorForCategory(cat.toLowerCase());
                                     return Column(
                                       children: [
                                         Row(
@@ -240,7 +232,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                               width: 35,
                                               height: 35,
                                               decoration: BoxDecoration(
-                                                  color: bg,
+                                                  color: color,
                                                   shape: BoxShape.circle
                                               ),
                                               child: Icon(
