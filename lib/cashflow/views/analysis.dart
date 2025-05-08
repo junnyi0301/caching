@@ -1,5 +1,3 @@
-// lib/views/analysis.dart
-
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +35,10 @@ class _AnalysisPgState extends State<AnalysisPg> {
         data[tx.category]!['count'] = data[tx.category]!['count'] + 1;
       }
     }
-    return data;
+    final sortedEntries = data.entries.toList()
+      ..sort((a, b) => (b.value['sum'] as double).compareTo(a.value['sum'] as double));
+
+    return Map.fromEntries(sortedEntries);
   }
 
   List<PieChartSectionData> _buildChartSections(
@@ -60,7 +61,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
           Colors.purple,
           Colors.red,
           Colors.teal,
-          Colors.yellow,
+          Colors.cyan,
           Colors.pink,
         ];
         int idx = 0;
@@ -106,7 +107,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
       appBar: AppBar(
         title: Text('Analysis', style: design.subtitleText),
         centerTitle: true,
-        backgroundColor: const Color(0xFFB9D3FB),
+        backgroundColor: design.primaryColor,
       ),
       backgroundColor: const Color(0xFFE7EEFD),
       bottomNavigationBar: BottomNav(currentIndex: 2),
@@ -128,14 +129,13 @@ class _AnalysisPgState extends State<AnalysisPg> {
               padding: const EdgeInsets.only(top: 24),
               child: Column(
                 children: [
-                  // Month picker + Pie chart + Details
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         width: 373,
                         decoration: ShapeDecoration(
-                          color: const Color(0xFFFFF2BF),
+                          color: design.primaryButton,
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(width: 5, color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
@@ -229,7 +229,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                       Colors.purple,
                                       Colors.red,
                                       Colors.teal,
-                                      Colors.yellow,
+                                      Colors.cyan,
                                       Colors.pink
                                     ][idx % 8];
                                     return Column(
@@ -277,11 +277,10 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                     setState(() => _showDetails = !_showDetails),
                                 style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
-                                    tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap
+                                ),
                                 child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       _showDetails
@@ -306,14 +305,13 @@ class _AnalysisPgState extends State<AnalysisPg> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  // Transactions preview
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         width: 373,
                         decoration: ShapeDecoration(
-                          color: const Color(0xFFFFF2BF),
+                          color: design.primaryButton,
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(width: 5, color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
@@ -335,7 +333,8 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                   TextButton(
                                     onPressed: () => Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => const TransactionsPage()),
+                                        builder: (_) => const TransactionsPage()
+                                      ),
                                     ),
                                     style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,

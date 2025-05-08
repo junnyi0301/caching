@@ -1,5 +1,3 @@
-// lib/views/transactions_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../model/transaction.dart' as cf;
@@ -17,7 +15,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
   final svc = TransactionService();
   final design = Design();
 
-  // Define all possible categories
   final List<String> allCategories = [
     'shops',
     'food',
@@ -29,7 +26,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
     'utility',
   ];
 
-  // Keep track of selected filters
   Set<String> selectedCategories = {};
 
   IconData getCategoryIcon(String category) {
@@ -51,18 +47,18 @@ class _TransactionsPageState extends State<TransactionsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFE7EEFD),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFB9D3FB),
+        backgroundColor: design.primaryColor,
         elevation: 0,
         centerTitle: true,
         title: Text('History', style: design.subtitleText),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.keyboard_arrow_left, color: Colors.black),
-          iconSize: 30, // Just the icon
+          iconSize: 30,
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Colors.white),
-            minimumSize: WidgetStatePropertyAll(Size(36, 36)), // Reduce overall button size
-            padding: WidgetStatePropertyAll(EdgeInsets.zero),  // Remove extra padding
+            minimumSize: WidgetStatePropertyAll(Size(36, 36)),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -167,10 +163,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
               ? allTx
               : allTx.where((tx) => selectedCategories.contains(tx.category.toLowerCase())).toList();
 
-          // Group by month-year
           final Map<String, List<cf.Transaction>> grouped = {};
           for (var tx in filtered) {
-            final dt = tx.timestamp; // now a DateTime
+            final dt = tx.timestamp;
             final key = DateFormat('MMMM yyyy').format(dt);
             grouped.putIfAbsent(key, () => []).add(tx);
           }
@@ -203,7 +198,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     ),
                     child: Text(
                       month.toUpperCase(),
-                      textAlign: TextAlign.center,    // center the text horizontally
+                      textAlign: TextAlign.center,
                       style: design.recordImportantText
                     ),
                   ),
@@ -214,7 +209,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 320),
                     decoration: ShapeDecoration(
-                      color: const Color(0xFFFFF2BF),
+                      color: design.primaryButton,
                       shape: RoundedRectangleBorder(
                         side: const BorderSide(width: 5, color: Colors.white),
                         borderRadius: BorderRadius.circular(12),

@@ -1,4 +1,3 @@
-// lib/views/add_transaction.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +17,6 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _methodController = TextEditingController(text: 'Cash');
   final TextEditingController _amountController = TextEditingController();
 
-  // Define categories with labels and icons
   final List<Map<String, dynamic>> _categories = [
     {'label': 'Shops', 'icon': Icons.shopping_cart, 'value': 'Shops'},
     {'label': 'Food', 'icon': Icons.fastfood, 'value': 'Food'},
@@ -56,7 +54,6 @@ class _AddPageState extends State<AddPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      // Display as DD/MM/YYYY
       _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       setState(() {});
     }
@@ -72,15 +69,22 @@ class _AddPageState extends State<AddPage> {
   Future<void> _saveToFirebaseAndReturn() async {
     if (!_isFormValid) return;
 
-    // Parse the displayed date string back into a DateTime
     final DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
 
     await TransactionService.saveTransaction(
       category: _selectedCategory!,
       method: _methodController.text,
-      date: parsedDate,              // now passing a DateTime
+      date: parsedDate,
       amount: double.parse(_amountController.text),
     );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Transaction recorded successfully'),
+        ),
+      );
+    }
 
     Navigator.of(context).pop();
   }
@@ -89,10 +93,10 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     const double maxContentWidth = 360;
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD),
+      backgroundColor: const Color(0xFFE7EEFD),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFB9D3FB),
+        backgroundColor: design.primaryColor,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.keyboard_arrow_left, color: Colors.black),
@@ -119,9 +123,7 @@ class _AddPageState extends State<AddPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Category grid
             const SizedBox(height: 16),
-            //recheck this part
             Align(
               alignment: Alignment.center,
               child: GridView.count(
@@ -167,17 +169,19 @@ class _AddPageState extends State<AddPage> {
                 }).toList(),
               ),
             ),
-            // until here
+
             const SizedBox(height: 32),
 
-            // Form fields
             Align(
               alignment: Alignment.center,
               child: Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF9C4),
-                  borderRadius: BorderRadius.circular(12),
+                decoration: ShapeDecoration(
+                  color: design.primaryButton,
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(width: 5, color: Colors.white),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Column(
                   children: [

@@ -1,15 +1,13 @@
-// lib/services/transaction_service.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/transaction.dart' as cf;
 
 class TransactionService {
   final _col = FirebaseFirestore.instance.collection('transactions');
 
-  /// Emits all transactions (ordered newest first).
   Stream<List<cf.Transaction>> getTransactionsStream() {
     return _col
         .orderBy('timestamp', descending: true)
+        .orderBy('created_at', descending: true)
         .snapshots()
         .map((snap) => snap.docs
         .map((doc) => cf.Transaction.fromMap(doc.data()))
