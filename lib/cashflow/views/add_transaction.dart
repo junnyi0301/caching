@@ -199,6 +199,7 @@ class _AddPageState extends State<AddPage> {
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.all(12),
+                          suffixIcon: const Icon(Icons.keyboard_arrow_down, size: 30),
                         ),
                       ),
                     ),
