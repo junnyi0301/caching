@@ -91,7 +91,6 @@ class _AddPageState extends State<AddPage> {
 
   @override
   Widget build(BuildContext context) {
-    const double maxContentWidth = 360;
     return Scaffold(
       backgroundColor: const Color(0xFFE7EEFD),
       appBar: AppBar(
