@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:caching/users/services/profile_service.dart';
 import 'package:caching/users/model/profile.dart';
 import 'package:caching/users/views/edit_profile_page.dart';
+import 'package:caching/rewards/view/rewards.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -167,7 +168,12 @@ class ProfilePage extends StatelessWidget {
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => RewardsPage()),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFFF0B3),
                           alignment: Alignment.centerLeft,

@@ -33,15 +33,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// import 'package:caching/users/views/profile_page.dart';
-// import 'package:caching/rewards/rewards.dart';
-// import 'package:flutter/material.dart';
-//
-//
-// void main() {
-//   runApp(MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     home: ProfilePage(),
-//   ));
-// }
-

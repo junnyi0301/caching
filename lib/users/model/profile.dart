@@ -6,6 +6,7 @@ class Profile {
   int age;
   String description;
   String phoneNumber;
+  int points;
 
   Profile({
     required this.photoUrl,
@@ -15,6 +16,7 @@ class Profile {
     required this.age,
     required this.description,
     required this.phoneNumber,
+    required this.points,
   });
 
   factory Profile.fromMap(Map<String, dynamic> m) {
@@ -25,7 +27,8 @@ class Profile {
       gender:      m['gender']      as String? ?? 'Not set',
       age:         (m['age']        as int?)   ?? 0,
       description: m['description'] as String? ?? 'Not set',
-      phoneNumber:  m['phoneNumber'] as String? ?? '',
+      phoneNumber: m['phoneNumber'] as String? ?? '',
+      points:      (m['points']     as int?)   ?? 0,
     );
   }
 
@@ -37,7 +40,8 @@ class Profile {
       'gender':      gender,
       'age':         age,
       'description': description,
-      'phoneNumber':  phoneNumber,
+      'phoneNumber': phoneNumber,
+      'points':      points,
     };
   }
 }
