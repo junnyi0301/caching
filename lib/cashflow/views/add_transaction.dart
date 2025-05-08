@@ -33,6 +33,7 @@ class _AddPageState extends State<AddPage> {
   @override
   void initState() {
     super.initState();
+    _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
     _methodController.addListener(() => setState(() {}));
     _amountController.addListener(() => setState(() {}));
   }
@@ -191,8 +192,6 @@ class _AddPageState extends State<AddPage> {
                         readOnly: true,
                         onTap: _pickDate,
                         decoration: InputDecoration(
-                          hintText: 'DD/MM/YYYY',
-                          hintStyle: design.detailText,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide.none,
