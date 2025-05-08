@@ -4,12 +4,12 @@ import 'package:caching/rewards/model/voucher.dart';
 class RedeemedVoucher {
   final String id;
   final String userId;
-  final Voucher voucher;      // snapshot of voucher details at time of redemption
-  final String couponCode;    // issued code for this redemption
-  final DateTime redeemedAt;  // timestamp when redeemed
-  final DateTime validFrom;   // start of valid usage window
-  final DateTime validUntil;  // end of valid usage window
-  final bool used;            // whether coupon has been used
+  final Voucher voucher;
+  final String couponCode;
+  final DateTime redeemedAt;
+  final DateTime validFrom;
+  final DateTime validUntil;
+  final bool used;
 
   RedeemedVoucher({
     required this.id,
@@ -23,12 +23,10 @@ class RedeemedVoucher {
   });
 
   factory RedeemedVoucher.fromMap(Map<String, dynamic> m, String docId) {
-    // voucherData is stored as a sub-map, voucherId separately if needed
     final voucherMap = m['voucherData'] as Map<String, dynamic>? ?? {};
     final voucherId  = m['voucherId'] as String? ?? docId;
     final voucher    = Voucher.fromMap(voucherMap, voucherId);
 
-    // issued timestamp and validity may be stored as Firestore Timestamps
     DateTime parseDate(dynamic d, DateTime fallback) {
       if (d is Timestamp) return d.toDate();
       if (d is String) return DateTime.tryParse(d) ?? fallback;
@@ -67,7 +65,6 @@ class RedeemedVoucher {
     };
   }
 
-  /// Helper to format expiry range as string
   String get expiryRange {
     final from = "\${validFrom.toLocal().toString().split(' ')[0]}";
     final to   = "\${validUntil.toLocal().toString().split(' ')[0]}";

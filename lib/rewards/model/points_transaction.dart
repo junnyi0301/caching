@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PointTransaction {
   final String id;
-  final int amount; // positive or negative
+  final int amount;
   final DateTime timestamp;
   final String description;
 

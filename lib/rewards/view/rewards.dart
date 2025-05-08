@@ -1,4 +1,3 @@
-// lib/view/rewards.dart
 import 'package:flutter/material.dart';
 import 'package:caching/rewards/view/rewards_details.dart';
 import 'package:caching/rewards/view/redeemed.dart';
@@ -41,7 +40,6 @@ class _RewardsPageState extends State<RewardsPage> {
   }
 
   void _onRedeem(Map<String, Object> redeemed) {
-    // after redeem, reload redeemed list & points
     _loadData();
     setState(() => _showVouchers = false);
   }
@@ -77,7 +75,6 @@ class _RewardsPageState extends State<RewardsPage> {
             ),
           ),
 
-          // Toggle Vouchers / My Rewards
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(

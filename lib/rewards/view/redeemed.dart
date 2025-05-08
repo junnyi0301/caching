@@ -1,5 +1,3 @@
-// lib/view/redeemed.dart
-
 import 'package:flutter/material.dart';
 import 'package:caching/rewards/model/redeemed_voucher.dart';
 
@@ -13,7 +11,6 @@ class RedeemedVoucherPage extends StatelessWidget {
     final cardBg = const Color(0xFFFFF4B8);
     final headerBg = const Color(0xFFBBCFFF);
 
-    // Format the validFrom/validUntil into human‑readable strings:
     String fmt(DateTime d) => d.toLocal().toString().split(' ')[0];
 
     return Scaffold(
@@ -53,20 +50,17 @@ class RedeemedVoucherPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // logo (icon can be network or asset)
                   redeemed.voucher.icon.startsWith('http')
                       ? Image.network(redeemed.voucher.icon, width: 80, height: 80)
                       : Image.asset(redeemed.voucher.icon, width: 80, height: 80),
                   const SizedBox(height: 16),
 
-                  // title (e.g. "GrabGifts RM5 Voucher")
                   Text(
                     redeemed.voucher.description,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  // subtitle or description
                   Text(
                     redeemed.voucher.subtitle.isNotEmpty
                         ? redeemed.voucher.subtitle
@@ -76,14 +70,12 @@ class RedeemedVoucherPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Coupon code label
                   const Text(
                     'COUPON CODE',
                     style: TextStyle(fontSize: 12, letterSpacing: 2, color: Colors.black87),
                   ),
                   const SizedBox(height: 8),
 
-                  // Coupon code itself
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -103,11 +95,9 @@ class RedeemedVoucherPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Divider
                   const Divider(height: 1, thickness: 1, color: Color(0xFFFFD54F)),
                   const SizedBox(height: 16),
 
-                  // Expiry range
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

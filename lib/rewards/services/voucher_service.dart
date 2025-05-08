@@ -5,7 +5,6 @@ class VoucherService {
   final CollectionReference _voucherCollection =
   FirebaseFirestore.instance.collection('vouchers');
 
-  /// Fetch all vouchers from Firestore
   Future<List<Voucher>> displayVouchers() async {
     try {
       final snapshot = await _voucherCollection.get();
@@ -18,7 +17,6 @@ class VoucherService {
     }
   }
 
-  /// Fetch a single voucher by ID
   Future<Voucher?> displayVoucherById(String id) async {
     try {
       final doc = await _voucherCollection.doc(id).get();
