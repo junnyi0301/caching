@@ -6,6 +6,7 @@ import 'package:caching/chat/views/friends.dart';
 import 'package:caching/utilities/notification.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'auth/auth_gate.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
 

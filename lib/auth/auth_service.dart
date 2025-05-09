@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService{
 
+  //Instance od auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -21,7 +22,7 @@ class AuthService{
 
     try{
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      //Save user
+      //Save users
       _firestore.collection("Users").doc(userCredential.user!.uid).set({
         "uid": userCredential.user!.uid,
         "email": email,

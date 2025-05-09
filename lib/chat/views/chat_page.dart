@@ -136,7 +136,6 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    //Is current user
     bool isCurrentUser = data["senderID"] == _auth.currentUser!.uid;
 
     return ChatBubble(message: data["message"], isCurrentUser: isCurrentUser);
