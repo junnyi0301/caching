@@ -1,3 +1,4 @@
+import 'package:caching/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/rewards/view/rewards_details.dart';
 import 'package:caching/rewards/view/redeemed.dart';
@@ -60,6 +61,7 @@ class _RewardsPageState extends State<RewardsPage> {
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
+      bottomNavigationBar: BottomNav(currentIndex: 4),
       body: Column(
         children: [
           // Points card

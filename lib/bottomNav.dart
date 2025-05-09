@@ -3,6 +3,7 @@ import 'package:caching/goal/views/goal_page.dart';
 import 'package:caching/checklist/views/checklist_page.dart';
 import 'package:caching/cashflow/views/analysis.dart';
 import 'package:caching/chat/views/friends.dart';
+import 'package:caching/users/views/profile_page.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:flutter/material.dart';
 
@@ -93,7 +94,7 @@ class BottomNav extends StatelessWidget {
         } else if (index == 3) {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => FriendsPage()));
         } else if (index == 4) {
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProfilePage()));
         }
       },
       child: Column(

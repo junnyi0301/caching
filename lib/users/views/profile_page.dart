@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:caching/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:caching/users/services/profile_service.dart';
 import 'package:caching/users/model/profile.dart';
@@ -17,6 +18,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: design.secondaryColor,
+      bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SafeArea(
         child: StreamBuilder<Profile?>(
           stream: service.getProfileStream(),
