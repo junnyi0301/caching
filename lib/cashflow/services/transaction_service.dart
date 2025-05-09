@@ -42,7 +42,7 @@ class TransactionService {
       'category':   category,
       'method':     method,
       'timestamp':  timestamp,
-      'amount':    -amount,
+      'amount':    amount,
       'note': note,
       'created_at': FieldValue.serverTimestamp(),
     });
@@ -67,7 +67,7 @@ class TransactionService {
       'category':   category,
       'method':     method,
       'timestamp':  timestamp,
-      'amount':    -amount,
+      'amount':    amount,
       'note': note,
       'updated_at': FieldValue.serverTimestamp(),
     });

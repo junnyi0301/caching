@@ -10,6 +10,7 @@ import '../views/transactions.dart';
 import '../views/add_transaction.dart';
 import '../services/transaction_service.dart';
 import '../views/transaction_detail.dart';
+import '../services/category.dart';
 
 class AnalysisPg extends StatefulWidget {
   const AnalysisPg({Key? key}) : super(key: key);
@@ -22,6 +23,8 @@ class _AnalysisPgState extends State<AnalysisPg> {
   final svc = TransactionService();
   DateTime _selectedMonth = DateTime.now();
   bool _showDetails = false;
+  bool isExpense = true;
+  bool _isExpenseSelected = true;
 
   String get _monthLabel => DateFormat.yMMM().format(_selectedMonth);
 
@@ -88,15 +91,38 @@ class _AnalysisPgState extends State<AnalysisPg> {
 
           final txs = snapshot.data ?? [];
           final preview = txs.take(3).toList();
-          final catData = _computeCategoryData(txs);
-          final totalSpending =
-          catData.values.fold<double>(0, (t, e) => t + (e['sum'] as double));
+          final filteredTxs = txs.where((tx) =>
+          _isExpenseSelected
+            ? tx.amount < 0
+            : tx.amount > 0
+          ).toList();
+
+          final catData = _computeCategoryData(filteredTxs);
+          final total = catData.values.fold<double>(0, (t, e) => t + (e['sum'] as double));
 
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.only(top: 24),
               child: Column(
                 children: [
+                  Container(
+                    width: 373,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      child: Column(
+                        children: [
+                          CategoryToggle(
+                            isExpenseSelected: _isExpenseSelected,
+                            onToggle: (bool selected) {
+                              setState(() {
+                                _isExpenseSelected = selected;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -110,8 +136,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                           ),
                         ),
                         child: Padding(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -165,15 +190,18 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            'Total Spending',
-                                            style: design.pieChartInnerTitle
+                                            _isExpenseSelected
+                                              ? 'Total Spending'
+                                              : 'Total Income',
+                                            style: design.pieChartInnerTitle,
                                           ),
                                           Text(
-                                            'RM ${totalSpending.toStringAsFixed(2)}',
-                                            style: design.pieChartInnerText
+                                            'RM ${total.toStringAsFixed(2)}',
+                                            style: design.pieChartInnerText,
                                           ),
                                         ],
                                       ),
+
                                     ],
                                   ),
                                 ),
@@ -185,9 +213,9 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                     final cat = e.key;
                                     final sum = e.value['sum'] as double;
                                     final count = e.value['count'] as int;
-                                    final pct = totalSpending > 0
-                                        ? sum / totalSpending * 100
-                                        : 0;
+                                    final pct = total > 0
+                                      ? sum / total * 100
+                                      : 0;
                                     final color = design.categoryColor(cat.toLowerCase());
                                     return Column(
                                       children: [
@@ -364,7 +392,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
+                                                  '${tx.amount < 0 ? '- ' : '+ '}RM ${tx.amount.abs().toStringAsFixed(2)}',
                                                   style: design.recordImportantText,
                                                 ),
                                                 const SizedBox(height: 4),

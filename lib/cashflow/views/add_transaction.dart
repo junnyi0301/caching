@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../services/transaction_service.dart';
 import '../../utilities/design.dart';
 import '../model/transaction.dart';
+import '../services/category.dart';
 
 class AddPage extends StatefulWidget {
   final Transaction? existingTransaction;
@@ -32,7 +33,17 @@ class _AddPageState extends State<AddPage> {
     {'label': 'Utility', 'icon': Icons.power, 'value': 'Utility'},
   ];
 
+  final List<Map<String, dynamic>> _incomeCategories = [
+    {'label': 'Salary', 'icon': Icons.monetization_on, 'value': 'Salary'},
+    {'label': 'Investments', 'icon': Icons.trending_up, 'value': 'Investments'},
+    {'label': 'Bonus', 'icon': Icons.card_giftcard, 'value': 'Bonus'},
+    {'label': 'Others', 'icon': Icons.more_horiz, 'value': 'Others'},
+  ];
+
   String? _selectedCategory;
+
+  bool _isExpenseSelected = true;
+  List<Map<String, dynamic>> get currentCategories => _isExpenseSelected ? _categories : _incomeCategories;
 
   @override
   void initState() {
@@ -92,7 +103,9 @@ class _AddPageState extends State<AddPage> {
         category: _selectedCategory!,
         method: _methodController.text,
         timestamp: parsedDate,
-        amount: double.parse(_amountController.text),
+        amount: _isExpenseSelected
+          ? -double.parse(_amountController.text)
+          : double.parse(_amountController.text),
         note: _noteController.text.trim(),
       );
     } else {
@@ -103,7 +116,9 @@ class _AddPageState extends State<AddPage> {
         category: _selectedCategory!,
         method: _methodController.text,
         timestamp: parsedDate,
-        amount: double.parse(_amountController.text),
+        amount: _isExpenseSelected
+          ? -double.parse(_amountController.text)
+          : double.parse(_amountController.text),
         note: _noteController.text.trim(),
       );
     }
@@ -156,6 +171,16 @@ class _AddPageState extends State<AddPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
+            CategoryToggle(
+              isExpenseSelected: _isExpenseSelected,
+              onToggle: (bool selected) {
+                setState(() {
+                  _isExpenseSelected = selected;
+                  _selectedCategory = null;
+                });
+              },
+            ),
+            const SizedBox(height: 26),
             Align(
               alignment: Alignment.center,
               child: GridView.count(
@@ -163,8 +188,9 @@ class _AddPageState extends State<AddPage> {
                 shrinkWrap: true,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 2,
-                children: _categories.map((cat) {
+                children: currentCategories.map((cat) {
                   final isSelected = _selectedCategory == cat['value'];
+
                   return InkWell(
                     onTap: () => setState(() => _selectedCategory = cat['value']),
                     borderRadius: BorderRadius.circular(16),
@@ -181,7 +207,7 @@ class _AddPageState extends State<AddPage> {
                               shape: BoxShape.circle,
                               color: isSelected
                                 ? Colors.orange
-                                : Colors.blue,
+                                : Colors.blue
                             ),
                             child: Icon(
                               cat['icon'],
@@ -202,7 +228,7 @@ class _AddPageState extends State<AddPage> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 26),
 
             Align(
               alignment: Alignment.center,
@@ -334,6 +360,7 @@ class _AddPageState extends State<AddPage> {
                 ),
               ),
             ),
+            const SizedBox(height: 26),
           ],
         ),
       ),

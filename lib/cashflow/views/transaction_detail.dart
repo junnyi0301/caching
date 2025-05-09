@@ -28,7 +28,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
     final dateStr = DateFormat('dd/MM/yyyy').format(tx.timestamp);
 
     return Scaffold(
-      backgroundColor: design.secondaryColor,
+      backgroundColor: const Color(0xFFE7EEFD),
       appBar: AppBar(
         backgroundColor: design.primaryColor,
         elevation: 0,

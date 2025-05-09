@@ -25,6 +25,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
     'travel',
     'transport',
     'utility',
+    'salary',
+    'investments',
+    'bonus',
+    'others',
   ];
 
   Set<String> selectedCategories = {};
@@ -65,82 +69,85 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 ),
                 builder: (ctx) => StatefulBuilder(
                   builder: (ctx2, setModalState) {
-                    return Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Text(
-                              'Filter by Category',
-                              style: design.contentText,
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(25),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Text(
+                                'Filter by Category',
+                                style: design.contentText,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Flexible(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: allCategories.map((category) {
-                                  return CheckboxListTile(
-                                    controlAffinity: ListTileControlAffinity.leading,
-                                    value: selectedCategories.contains(category),
-                                    onChanged: (sel) {
-                                      setModalState(() {
-                                        setState(() {
-                                          if (sel == true) {
-                                            selectedCategories.add(category);
-                                          } else {
-                                            selectedCategories.remove(category);
-                                          }
+                            const SizedBox(height: 16),
+                            Flexible(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: allCategories.map((category) {
+                                    return CheckboxListTile(
+                                      controlAffinity: ListTileControlAffinity.leading,
+                                      value: selectedCategories.contains(category),
+                                      onChanged: (sel) {
+                                        setModalState(() {
+                                          setState(() {
+                                            if (sel == true) {
+                                              selectedCategories.add(category);
+                                            } else {
+                                              selectedCategories.remove(category);
+                                            }
+                                          });
                                         });
-                                      });
-                                    },
-                                    secondary: Icon(
-                                      design.categoryIcon(category),
-                                      color: design.categoryColor(category),
-                                    ),
-                                    title: Text(
-                                      category[0].toUpperCase() + category.substring(1),
-                                      style: design.filterTitle,
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Center(
-                            child: SizedBox(
-                              width: 300,
-                              height: 40,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: design.secondaryButton,
-                                  foregroundColor: Colors.black,
-                                  side: const BorderSide(
-                                      color: Colors.black,
-                                      width: 2
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setModalState(() {
-                                    setState(() => selectedCategories.clear());
-                                  });
-                                },
-                                icon: const Icon(Icons.clear, size: 20,),
-                                label: Text(
-                                  'Clear Filters',
-                                  style: design.contentText,
+                                      },
+                                      secondary: Icon(
+                                        design.categoryIcon(category),
+                                        color: design.categoryColor(category),
+                                      ),
+                                      title: Text(
+                                        category[0].toUpperCase() + category.substring(1),
+                                        style: design.filterTitle,
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
+                            const SizedBox(height: 12),
+                            Center(
+                              child: SizedBox(
+                                width: 373,
+                                height: 40,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: design.secondaryButton,
+                                    foregroundColor: Colors.black,
+                                    side: const BorderSide(
+                                        color: Colors.black,
+                                        width: 2
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setModalState(() {
+                                      setState(() => selectedCategories.clear());
+                                    });
+                                  },
+                                  icon: const Icon(Icons.clear, size: 20,),
+                                  label: Text(
+                                    'Clear Filters',
+                                    style: design.contentText,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -188,7 +195,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 Align(
                   alignment: Alignment.center,
                   child: Container(
-                    width: 320,
+                    width: 373,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -205,7 +212,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 Align(
                   alignment: Alignment.center,
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 320),
                     decoration: ShapeDecoration(
                       color: design.primaryButton,
                       shape: RoundedRectangleBorder(
@@ -267,7 +273,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                     CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
+                                        '${tx.amount < 0 ? '- ' : '+ '}RM ${tx.amount.abs().toStringAsFixed(2)}',
                                         style: design.recordImportantText,
                                       ),
                                       const SizedBox(height: 4),
