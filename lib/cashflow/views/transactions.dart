@@ -1,3 +1,4 @@
+import 'package:caching/cashflow/views/transaction_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../model/transaction.dart' as cf;
@@ -22,25 +23,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
     'repairs',
     'health',
     'travel',
-    'transportation',
+    'transport',
     'utility',
   ];
 
   Set<String> selectedCategories = {};
-
-  IconData getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'shops': return Icons.shopping_cart;
-      case 'food': return Icons.fastfood;
-      case 'entertainment': return Icons.movie;
-      case 'repairs': return Icons.build;
-      case 'health': return Icons.health_and_safety;
-      case 'travel': return Icons.card_travel;
-      case 'transportation': return Icons.directions_bus;
-      case 'utility': return Icons.power;
-      default: return Icons.category;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +96,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                         });
                                       });
                                     },
-                                    secondary: Icon(getCategoryIcon(category)),
+                                    secondary: Icon(
+                                      design.categoryIcon(category),
+                                      color: design.categoryColor(category),
+                                    ),
                                     title: Text(
                                       category[0].toUpperCase() + category.substring(1),
                                       style: design.filterTitle,
@@ -128,8 +118,13 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: design.secondaryButton,
                                   foregroundColor: Colors.black,
-                                  side: const BorderSide(color: Colors.black, width: 2),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 2
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)
+                                  ),
                                 ),
                                 onPressed: () {
                                   setModalState(() {
@@ -137,7 +132,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                   });
                                 },
                                 icon: const Icon(Icons.clear, size: 20,),
-                                label: Text('Clear Filters', style: design.contentText,),
+                                label: Text(
+                                  'Clear Filters',
+                                  style: design.contentText,
+                                ),
                               ),
                             ),
                           ),
@@ -218,49 +216,76 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Column(
                       children: txs.asMap().entries.map<Widget>((e) {
-                        final i = e.key;
                         final tx = e.value;
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      tx.category,
-                                      style: design.recordImportantText
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      tx.method,
-                                      style: design.captionText
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
-                                      style: design.recordImportantText
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      DateFormat('dd/MM/yyyy').format(tx.timestamp),
-                                      style: design.captionText
-                                    ),
-                                  ],
-                                ),
-                              ],
+                        return InkWell(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  TransactionDetailPage(tx: tx), // your detail
                             ),
-                            if (i < txs.length - 1) ...[
-                              const SizedBox(height: 12),
-                              const Divider(color: Colors.grey, thickness: 1),
-                              const SizedBox(height: 12),
-                            ]
-                          ],
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 35,
+                                    height: 35,
+                                    margin: const EdgeInsets.only(
+                                        right: 12, top: 6),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: design.categoryColor(tx.category),
+                                    ),
+                                    child: Icon(
+                                      design.categoryIcon(tx.category),
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          tx.category,
+                                          style:
+                                          design.recordImportantText
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          tx.method,
+                                          style: design.captionText
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
+                                        style: design.recordImportantText,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        DateFormat('dd/MM/yyyy').format(tx.timestamp),
+                                        style: design.captionText,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              if (tx != txs.last)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Divider(thickness: 1, color: Colors.black26),
+                                ),
+                            ],
+                          ),
                         );
                       }).toList(),
                     ),

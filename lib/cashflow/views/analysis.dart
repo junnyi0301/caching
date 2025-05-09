@@ -9,6 +9,7 @@ import '../model/transaction.dart';
 import '../views/transactions.dart';
 import '../views/add_transaction.dart';
 import '../services/transaction_service.dart';
+import '../views/transaction_detail.dart';
 
 class AnalysisPg extends StatefulWidget {
   const AnalysisPg({Key? key}) : super(key: key);
@@ -41,19 +42,6 @@ class _AnalysisPgState extends State<AnalysisPg> {
     return Map.fromEntries(sortedEntries);
   }
 
-  static const Map<String, Color> _categoryColors = {
-    'shops': Colors.blue,
-    'food': Colors.green,
-    'entertainment': Colors.orange,
-    'repairs': Colors.purple,
-    'health': Colors.red,
-    'travel': Colors.teal,
-    'transport': Colors.cyan,
-    'utility': Colors.pink,
-  };
-
-  Color _colorForCategory(String category) => _categoryColors[category.toLowerCase()] ?? Colors.grey.shade400;
-
   List<PieChartSectionData> _buildChartSections(
       Map<String, Map<String, dynamic>> catData) {
     if (catData.isEmpty) {
@@ -73,35 +61,12 @@ class _AnalysisPgState extends State<AnalysisPg> {
       final cat = entry.key.toLowerCase();
       return PieChartSectionData(
         value: sum,
-        color: _colorForCategory(cat),
+        color: design.categoryColor(cat),
         radius: 35,
         title: '${pct.toStringAsFixed(1)}%',
         titleStyle: design.pieChartText,
       );
     }).toList();
-  }
-
-  IconData _iconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'shops':
-        return Icons.shopping_cart;
-      case 'food':
-        return Icons.fastfood;
-      case 'entertainment':
-        return Icons.movie;
-      case 'repairs':
-        return Icons.build;
-      case 'health':
-        return Icons.health_and_safety;
-      case 'travel':
-        return Icons.card_travel;
-      case 'transportation':
-        return Icons.directions_bus;
-      case 'utility':
-        return Icons.power;
-      default:
-        return Icons.category;
-    }
   }
 
   @override
@@ -223,7 +188,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                     final pct = totalSpending > 0
                                         ? sum / totalSpending * 100
                                         : 0;
-                                    final color = _colorForCategory(cat.toLowerCase());
+                                    final color = design.categoryColor(cat.toLowerCase());
                                     return Column(
                                       children: [
                                         Row(
@@ -236,7 +201,7 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                                   shape: BoxShape.circle
                                               ),
                                               child: Icon(
-                                                _iconForCategory(cat),
+                                                design.categoryIcon(cat),
                                                 color: Colors.white,
                                                 size: 20,
                                               ),
@@ -329,9 +294,9 @@ class _AnalysisPgState extends State<AnalysisPg> {
                                       ),
                                     ),
                                     style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap),
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap),
                                     child: Row(
                                       children: [
                                         Text(
@@ -358,48 +323,67 @@ class _AnalysisPgState extends State<AnalysisPg> {
                               )
                               : Column(
                                 children: preview.map((tx) {
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                  return InkWell(
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => TransactionDetailPage(tx: tx),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 35,
+                                              height: 35,
+                                              margin: const EdgeInsets.only(right: 12, top: 6),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: design.categoryColor(tx.category),
+                                              ),
+                                              child: Icon(
+                                                design.categoryIcon(tx.category),
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(tx.category, style: design.recordImportantText),
+                                                  const SizedBox(height: 4),
+                                                  Text(tx.method, style: design.captionText),
+                                                ],
+                                              ),
+                                            ),
+
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  tx.category,
-                                                  style: design.recordImportantText
+                                                  '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
+                                                  style: design.recordImportantText,
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Text(
-                                                  tx.method,
-                                                  style: design.captionText
+                                                  DateFormat('dd/MM/yyyy').format(tx.timestamp),
+                                                  style: design.captionText,
                                                 ),
                                               ],
                                             ),
+                                          ],
+                                        ),
+
+                                        if (tx != preview.last)
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                                            child: Divider(thickness: 1, color: Colors.black26),
                                           ),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                '${tx.amount < 0 ? '-' : ''}RM ${tx.amount.abs().toStringAsFixed(2)}',
-                                                style: design.recordImportantText
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                DateFormat('dd/MM/yyyy').format(tx.timestamp),
-                                                style: design.captionText
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      if (tx != preview.last)
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                                          child: Divider(thickness: 1, color: Colors.black26)),
-                                    ],
+                                      ],
+                                    ),
                                   );
                                 }).toList(),
                               ),

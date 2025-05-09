@@ -3,9 +3,12 @@ import 'package:intl/intl.dart';
 
 import '../services/transaction_service.dart';
 import '../../utilities/design.dart';
+import '../model/transaction.dart';
 
 class AddPage extends StatefulWidget {
-  const AddPage({Key? key}) : super(key: key);
+  final Transaction? existingTransaction;
+
+  const AddPage({Key? key, this.existingTransaction}) : super(key: key);
 
   @override
   _AddPageState createState() => _AddPageState();
@@ -33,9 +36,18 @@ class _AddPageState extends State<AddPage> {
   @override
   void initState() {
     super.initState();
-    _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    _methodController.addListener(() => setState(() {}));
-    _amountController.addListener(() => setState(() {}));
+
+    if (widget.existingTransaction != null) {
+      final tx = widget.existingTransaction!;
+      _dateController.text = DateFormat('dd/MM/yyyy').format(tx.timestamp);
+      _methodController.text = tx.method;
+      _amountController.text = tx.amount.abs().toStringAsFixed(2);
+      _selectedCategory = tx.category;
+    } else {
+      _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      _methodController.addListener(() => setState(() {}));
+      _amountController.addListener(() => setState(() {}));
+    }
   }
 
   @override
@@ -72,17 +84,32 @@ class _AddPageState extends State<AddPage> {
 
     final DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
 
-    await TransactionService.saveTransaction(
-      category: _selectedCategory!,
-      method: _methodController.text,
-      date: parsedDate,
-      amount: double.parse(_amountController.text),
-    );
+    if (widget.existingTransaction == null) {
+      await TransactionService.saveTransaction(
+        category: _selectedCategory!,
+        method: _methodController.text,
+        timestamp: parsedDate,
+        amount: double.parse(_amountController.text),
+      );
+    } else {
+      final id = widget.existingTransaction!.id;
+
+      await TransactionService.updateTransaction(
+        id: id!,
+        category: _selectedCategory!,
+        method: _methodController.text,
+        timestamp: parsedDate,
+        amount: double.parse(_amountController.text),
+      );
+    }
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Transaction recorded successfully'),
+          content: Text(widget.existingTransaction == null
+            ? 'Transaction recorded successfully'
+            : 'Transaction updated successfully'
+          ),
         ),
       );
     }
@@ -243,14 +270,18 @@ class _AddPageState extends State<AddPage> {
                       height: 40,
                       child: ElevatedButton(
                         onPressed: _isFormValid
-                            ? _saveToFirebaseAndReturn
-                            : () {
+                          ? _saveToFirebaseAndReturn
+                          : () {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text("Missing Information"),
-                                content: const Text("Please fill out all fields before saving."),
+                                title: const Text(
+                                  "Missing Information"
+                                ),
+                                content: const Text(
+                                  "Please fill out all fields before saving."
+                                ),
                                 actions: [
                                   TextButton(
                                     child: const Text("OK"),
@@ -268,7 +299,9 @@ class _AddPageState extends State<AddPage> {
                           ),
                         ),
                         child: Text(
-                          'Save Transaction',
+                          widget.existingTransaction == null
+                            ? 'Save Transaction'
+                            : 'Update Transaction',
                           style: design.saveRecordText,
                         ),
                       ),
