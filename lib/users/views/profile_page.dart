@@ -6,10 +6,11 @@ import 'package:caching/users/model/profile.dart';
 import 'package:caching/users/views/edit_profile_page.dart';
 import 'package:caching/rewards/view/rewards.dart';
 import 'package:caching/utilities/design.dart';
+import 'package:caching/auth/auth_gate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +202,45 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
+
+                  // Logout button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const AuthGate()),
+                                (route) => false,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: design.primaryButton,
+                          alignment: Alignment.centerLeft,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Icon(Icons.logout, color: Colors.black),
+                            Text(
+                              "Log Out",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Icon(Icons.arrow_forward_ios, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
                 ],
               ),
             );

@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:caching/goal/model/goal.dart';
 import 'package:intl/intl.dart';
+import 'package:caching/rewards/services/rewards_service.dart';
 
 class GoalService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final rewardService = RewardService();
+
 
   //All friend in friend list
   Future<List<Map<String, dynamic>>> getAllFriends() async {
@@ -478,6 +481,31 @@ class GoalService {
         await _firestore.collection("goal").doc(goalID).update({
           "GoalStatus": status,
         });
+
+        if (status == "Completed") {
+          final goalData = goalSnapshot.data() as Map<String, dynamic>;
+          final personInvolve = goalData["PersonInvolve"] as Map<String, dynamic>;
+          final userIDs = personInvolve.keys.toList();
+
+          for (final uid in userIDs) {
+            try {
+              final userDoc = await _firestore.collection("Users").doc(uid).get();
+              if (userDoc.exists) {
+                final currentPoints = userDoc.data()?['points'] ?? 0;
+
+                await _firestore.collection("Users").doc(uid).update({
+                  'points': currentPoints + 100,
+                });
+
+                print("Points awarded to user $uid for completing goal $goalID");
+              }
+            } catch (e) {
+              print("Failed to update points for user $uid: $e");
+            }
+          }
+
+          print("Points awarded to all users for completing goal $goalID");
+        }
       } else {
         print("Goal $goalID not found.");
       }

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:caching/rewards/model/voucher.dart';
 import 'package:caching/rewards/model/redeemed_voucher.dart';
+import 'package:caching/goal/services/goal_service.dart';
 
 class RewardService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -107,5 +108,25 @@ class RewardService {
       print("Error fetching redeemed vouchers: $e");
       return [];
     }
+  }
+
+  /// Static method to award points to users
+  static Future<void> awardPointsToUsers(List<String> userIDs, int points) async {
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (String uid in userIDs) {
+      final userRef = FirebaseFirestore.instance.collection("Users").doc(uid);
+      final userDoc = await userRef.get();
+
+      if (userDoc.exists) {
+        int currentPoints = (userDoc["points"] ?? 0);
+        batch.update(userRef, {
+          "points": currentPoints + points,
+        });
+      }
+    }
+
+    // Commit the batch operation to update all users' points
+    await batch.commit();
   }
 }

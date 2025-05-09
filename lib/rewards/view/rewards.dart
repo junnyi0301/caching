@@ -64,7 +64,6 @@ class _RewardsPageState extends State<RewardsPage> {
       bottomNavigationBar: BottomNav(currentIndex: 4),
       body: Column(
         children: [
-          // Points card
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Container(
