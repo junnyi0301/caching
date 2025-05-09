@@ -29,6 +29,7 @@ class TransactionService {
     required String method,
     required DateTime timestamp,
     required double amount,
+    String? note,
   }) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -42,6 +43,7 @@ class TransactionService {
       'method':     method,
       'timestamp':  timestamp,
       'amount':    -amount,
+      'note': note,
       'created_at': FieldValue.serverTimestamp(),
     });
   }
@@ -52,6 +54,7 @@ class TransactionService {
     required String method,
     required DateTime timestamp,
     required double amount,
+    String? note,
   }) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final txRef = FirebaseFirestore.instance
@@ -65,6 +68,7 @@ class TransactionService {
       'method':     method,
       'timestamp':  timestamp,
       'amount':    -amount,
+      'note': note,
       'updated_at': FieldValue.serverTimestamp(),
     });
   }

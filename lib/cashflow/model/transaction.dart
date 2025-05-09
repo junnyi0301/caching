@@ -6,6 +6,7 @@ class Transaction {
   final String method;
   final DateTime timestamp;
   final double amount;
+  final String? note;
 
   const Transaction({
     this.id,
@@ -13,6 +14,7 @@ class Transaction {
     required this.method,
     required this.timestamp,
     required this.amount,
+    this.note,
   });
 
   Map<String, dynamic> toMap() => {
@@ -20,6 +22,7 @@ class Transaction {
     'method':     method,
     'timestamp':  timestamp,
     'amount':     amount,
+    'note': note,
     'created_at': FieldValue.serverTimestamp(),
   };
 
@@ -30,6 +33,7 @@ class Transaction {
       method:    map['method']   as String,
       timestamp: (map['timestamp'] as Timestamp).toDate(),
       amount:    (map['amount']  as num).toDouble(),
+      note: map['note'] as String?,
     );
   }
 }

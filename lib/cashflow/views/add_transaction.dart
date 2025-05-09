@@ -19,6 +19,7 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _methodController = TextEditingController(text: 'Cash');
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   final List<Map<String, dynamic>> _categories = [
     {'label': 'Shops', 'icon': Icons.shopping_cart, 'value': 'Shops'},
@@ -43,6 +44,7 @@ class _AddPageState extends State<AddPage> {
       _methodController.text = tx.method;
       _amountController.text = tx.amount.abs().toStringAsFixed(2);
       _selectedCategory = tx.category;
+      _noteController.text = tx.note ?? '';
     } else {
       _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
       _methodController.addListener(() => setState(() {}));
@@ -55,6 +57,7 @@ class _AddPageState extends State<AddPage> {
     _dateController.dispose();
     _methodController.dispose();
     _amountController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -90,6 +93,7 @@ class _AddPageState extends State<AddPage> {
         method: _methodController.text,
         timestamp: parsedDate,
         amount: double.parse(_amountController.text),
+        note: _noteController.text.trim(),
       );
     } else {
       final id = widget.existingTransaction!.id;
@@ -100,6 +104,7 @@ class _AddPageState extends State<AddPage> {
         method: _methodController.text,
         timestamp: parsedDate,
         amount: double.parse(_amountController.text),
+        note: _noteController.text.trim(),
       );
     }
 
@@ -261,6 +266,25 @@ class _AddPageState extends State<AddPage> {
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.all(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFormRow(
+                      label: 'Note',
+                      child: TextField(
+                        controller: _noteController,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(12),
+                          hintText: 'Optional note...',
+                          hintStyle: design.captionText
                         ),
                       ),
                     ),

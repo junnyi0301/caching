@@ -99,6 +99,11 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   _buildDetailRow('Date', dateStr, design),
+                  if (tx.note != null && tx.note!.trim().isNotEmpty)
+                    ...[
+                      const SizedBox(height: 16),
+                      _buildDetailRow('Note', tx.note!, design),
+                    ],
                 ],
               ),
             ),
@@ -189,7 +194,6 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                 ),
               ],
             ),
-
           ],
         ),
       ),
