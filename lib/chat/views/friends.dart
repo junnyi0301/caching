@@ -131,9 +131,6 @@ class _FriendsPageState extends State<FriendsPage> {
               )
             ]),
           ),
-          Container(
-              margin: EdgeInsets.symmetric(vertical: 24),
-              child: ElevatedButton(onPressed: logout, child: Text("Logout")))
         ]),
       ),
     );
