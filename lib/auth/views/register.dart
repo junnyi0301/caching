@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:caching/utilities/design.dart';
 import 'package:flutter/gestures.dart';
 
+
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -74,7 +75,7 @@ class _RegisterState extends State<Register> {
                   style: design.contentText,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.person_outline),
-                    hintText: 'John',
+                    hintText: 'Your Name',
                     hintStyle: design.contentText.copyWith(color: Colors.grey[400]),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
@@ -95,7 +96,7 @@ class _RegisterState extends State<Register> {
                   style: design.contentText,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
-                    hintText: 'john@example.com',
+                    hintText: 'XXX@email.com',
                     hintStyle: design.contentText.copyWith(color: Colors.grey[400]),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),

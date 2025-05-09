@@ -5,7 +5,7 @@ class Profile {
   String gender;
   int age;
   String description;
-  String phoneNumber;
+  String phone;
   int points;
 
   Profile({
@@ -15,7 +15,7 @@ class Profile {
     required this.gender,
     required this.age,
     required this.description,
-    required this.phoneNumber,
+    required this.phone,
     required this.points,
   });
 
@@ -27,7 +27,7 @@ class Profile {
       gender:      m['gender']      as String? ?? 'Not set',
       age:         (m['age']        as int?)   ?? 0,
       description: m['description'] as String? ?? 'Not set',
-      phoneNumber: m['phoneNumber'] as String? ?? '',
+      phone:       m['phone']       as String? ?? '',
       points:      (m['points']     as int?)   ?? 0,
     );
   }
@@ -40,7 +40,7 @@ class Profile {
       'gender':      gender,
       'age':         age,
       'description': description,
-      'phoneNumber': phoneNumber,
+      'phone':       phone,
       'points':      points,
     };
   }

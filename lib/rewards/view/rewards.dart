@@ -5,6 +5,7 @@ import 'package:caching/rewards/services/voucher_service.dart';
 import 'package:caching/rewards/services/rewards_service.dart';
 import 'package:caching/rewards/model/voucher.dart';
 import 'package:caching/rewards/model/redeemed_voucher.dart';
+import 'package:caching/utilities/design.dart';
 
 class RewardsPage extends StatefulWidget {
   const RewardsPage({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class RewardsPage extends StatefulWidget {
 class _RewardsPageState extends State<RewardsPage> {
   final VoucherService _voucherService = VoucherService();
   final RewardService _rewardService = RewardService();
+  final design = Design();
 
   Future<List<Voucher>>? _vouchersFuture;
   Future<List<RedeemedVoucher>>? _redeemedFuture;
@@ -49,9 +51,9 @@ class _RewardsPageState extends State<RewardsPage> {
     final bgLightBlue = const Color(0xFFCCE2FF);
 
     return Scaffold(
-      backgroundColor: bgLightBlue,
+      backgroundColor: design.secondaryColor,
       appBar: AppBar(
-        backgroundColor: bgLightBlue,
+        backgroundColor: design.primaryColor,
         elevation: 0,
         centerTitle: true,
         title: const Text('Rewards',
@@ -177,7 +179,7 @@ class _RewardsPageState extends State<RewardsPage> {
                     const SizedBox(height:4),
                     Text(v.description, style: const TextStyle(fontSize:12,color:Colors.grey), textAlign: TextAlign.center),
                     const Spacer(),
-                    Text(v.pointsLabel, style: const TextStyle(fontSize:18,fontWeight:FontWeight.bold,color:Colors.grey)),
+                    Text(v.pointsLabel, style: const TextStyle(fontSize:18,fontWeight:FontWeight.bold,color:Colors.black)),
                   ],
                 ),
               ),
@@ -243,7 +245,7 @@ class _RewardsPageState extends State<RewardsPage> {
         final expires = r.validUntil.toLocal().toString().split(' ')[0];
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: design.primaryButton,
             borderRadius: BorderRadius.circular(12),
             boxShadow: const [BoxShadow(color:Colors.black12,blurRadius:4)],
           ),
@@ -273,6 +275,9 @@ class _RewardsPageState extends State<RewardsPage> {
                 ),
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: design.submitButton,  // ← your new button color
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,

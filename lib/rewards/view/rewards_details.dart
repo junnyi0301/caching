@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:caching/rewards/services/rewards_service.dart';
 import 'package:caching/rewards/model/voucher.dart';
+import 'package:caching/utilities/design.dart';
 
 class RewardDetailsScreen extends StatelessWidget {
   final Voucher voucher;
   final int userPoints;
 
   final RewardService _rewardService = RewardService();
+  final design = Design();
 
   RewardDetailsScreen({
     Key? key,
@@ -78,9 +80,9 @@ class RewardDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[100],
+      backgroundColor: design.secondaryColor,
       appBar: AppBar(
-        backgroundColor: Colors.blue[100],
+        backgroundColor: design.primaryColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -103,7 +105,7 @@ class RewardDetailsScreen extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Colors.yellow[100],
+              color: design.primaryButton,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: SingleChildScrollView(
                 child: Column(
@@ -113,7 +115,7 @@ class RewardDetailsScreen extends StatelessWidget {
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text(voucher.subtitle,
-                        style: const TextStyle(fontSize: 14, color: Colors.black54)),
+                        style: const TextStyle(fontSize: 14, color: Colors.black)),
                     const SizedBox(height: 16),
                     Text("${voucher.requiredPoints} points",
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -152,7 +154,7 @@ class RewardDetailsScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () => _handleRedeem(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.yellow,
+                          backgroundColor: design.submitButton,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

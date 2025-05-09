@@ -39,7 +39,7 @@ class ProfileService {
       'age': data.age,
       'gender': data.gender,
       'description': data.description,
-      'phoneNumber': data.phoneNumber,
+      'phone': data.phone,
       'photoUrl': data.photoUrl,
     };
 

@@ -4,16 +4,19 @@ import 'package:caching/users/services/profile_service.dart';
 import 'package:caching/users/model/profile.dart';
 import 'package:caching/users/views/edit_profile_page.dart';
 import 'package:caching/rewards/view/rewards.dart';
+import 'package:caching/utilities/design.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     final service = ProfileService();
+    final design = Design();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE6F0FF),
+      backgroundColor: design.secondaryColor,
       body: SafeArea(
         child: StreamBuilder<Profile?>(
           stream: service.getProfileStream(),
@@ -32,7 +35,7 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   // Header
                   Container(
-                    color: const Color(0xFFB0CCFF),
+                    color: design.primaryColor,
                     padding: const EdgeInsets.all(16),
                     child: const Center(
                       child: Text(
@@ -72,7 +75,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Card(
-                      color: const Color(0xFFCCE0FF),
+                      color: design.primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -138,7 +141,7 @@ class ProfilePage extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFF0B3),
+                          backgroundColor: design.primaryButton,
                           alignment: Alignment.centerLeft,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -175,7 +178,7 @@ class ProfilePage extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFF0B3),
+                          backgroundColor: design.primaryButton,
                           alignment: Alignment.centerLeft,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

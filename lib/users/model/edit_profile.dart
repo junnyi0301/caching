@@ -4,7 +4,7 @@ class EditProfileData {
   int age;
   String gender;
   String description;
-  String phoneNumber;
+  String phone;
 
   EditProfileData({
     required this.photoUrl,
@@ -12,7 +12,7 @@ class EditProfileData {
     required this.gender,
     required this.age,
     required this.description,
-    required this.phoneNumber,
+    required this.phone,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,8 +22,7 @@ class EditProfileData {
       'age': age,
       'gender': gender,
       'description': description,
-      'phoneNumber': phoneNumber,
+      'phone': phone,
     };
   }
 }
-
