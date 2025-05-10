@@ -1,11 +1,16 @@
+// lib/views/add_transaction.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../services/transaction_service.dart';
 import '../../utilities/design.dart';
+import '../model/transaction.dart';
+import '../services/category.dart';
 
 class AddPage extends StatefulWidget {
-  const AddPage({Key? key}) : super(key: key);
+  final Transaction? existingTransaction;
+
+  const AddPage({Key? key, this.existingTransaction}) : super(key: key);
 
   @override
   _AddPageState createState() => _AddPageState();
@@ -16,7 +21,9 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _methodController = TextEditingController(text: 'Cash');
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
+  // Define categories with labels and icons
   final List<Map<String, dynamic>> _categories = [
     {'label': 'Shops', 'icon': Icons.shopping_cart, 'value': 'Shops'},
     {'label': 'Food', 'icon': Icons.fastfood, 'value': 'Food'},
@@ -28,13 +35,34 @@ class _AddPageState extends State<AddPage> {
     {'label': 'Utility', 'icon': Icons.power, 'value': 'Utility'},
   ];
 
+  final List<Map<String, dynamic>> _incomeCategories = [
+    {'label': 'Salary', 'icon': Icons.monetization_on, 'value': 'Salary'},
+    {'label': 'Investments', 'icon': Icons.trending_up, 'value': 'Investments'},
+    {'label': 'Bonus', 'icon': Icons.card_giftcard, 'value': 'Bonus'},
+    {'label': 'Others', 'icon': Icons.more_horiz, 'value': 'Others'},
+  ];
+
   String? _selectedCategory;
+
+  bool _isExpenseSelected = true;
+  List<Map<String, dynamic>> get currentCategories => _isExpenseSelected ? _categories : _incomeCategories;
 
   @override
   void initState() {
     super.initState();
-    _methodController.addListener(() => setState(() {}));
-    _amountController.addListener(() => setState(() {}));
+
+    if (widget.existingTransaction != null) {
+      final tx = widget.existingTransaction!;
+      _dateController.text = DateFormat('dd/MM/yyyy').format(tx.timestamp);
+      _methodController.text = tx.method;
+      _amountController.text = tx.amount.abs().toStringAsFixed(2);
+      _selectedCategory = tx.category;
+      _noteController.text = tx.note ?? '';
+    } else {
+      _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      _methodController.addListener(() => setState(() {}));
+      _amountController.addListener(() => setState(() {}));
+    }
   }
 
   @override
@@ -42,6 +70,7 @@ class _AddPageState extends State<AddPage> {
     _dateController.dispose();
     _methodController.dispose();
     _amountController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -54,6 +83,7 @@ class _AddPageState extends State<AddPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
+      // Display as DD/MM/YYYY
       _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       setState(() {});
     }
@@ -69,19 +99,41 @@ class _AddPageState extends State<AddPage> {
   Future<void> _saveToFirebaseAndReturn() async {
     if (!_isFormValid) return;
 
+    // Parse the displayed date string back into a DateTime
     final DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
 
-    await TransactionService.saveTransaction(
-      category: _selectedCategory!,
-      method: _methodController.text,
-      date: parsedDate,
-      amount: double.parse(_amountController.text),
-    );
+    if (widget.existingTransaction == null) {
+      await TransactionService.saveTransaction(
+        category: _selectedCategory!,
+        method: _methodController.text,
+        timestamp: parsedDate,
+        amount: _isExpenseSelected
+          ? -double.parse(_amountController.text)
+          : double.parse(_amountController.text),
+        note: _noteController.text.trim(),
+      );
+    } else {
+      final id = widget.existingTransaction!.id;
+
+      await TransactionService.updateTransaction(
+        id: id!,
+        category: _selectedCategory!,
+        method: _methodController.text,
+        timestamp: parsedDate,
+        amount: _isExpenseSelected
+          ? -double.parse(_amountController.text)
+          : double.parse(_amountController.text),
+        note: _noteController.text.trim(),
+      );
+    }
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Transaction recorded successfully'),
+          content: Text(widget.existingTransaction == null
+            ? 'Transaction recorded successfully'
+            : 'Transaction updated successfully'
+          ),
         ),
       );
     }
@@ -91,11 +143,12 @@ class _AddPageState extends State<AddPage> {
 
   @override
   Widget build(BuildContext context) {
+    //const double maxContentWidth = 360;
     return Scaffold(
-      backgroundColor: const Color(0xFFE7EEFD),
+      backgroundColor: const Color(0xFFE3F2FD),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: design.primaryColor,
+        backgroundColor: const Color(0xFFB9D3FB),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.keyboard_arrow_left, color: Colors.black),
@@ -112,8 +165,8 @@ class _AddPageState extends State<AddPage> {
           ),
         ),
         title: Text(
-            'Add',
-            style: design.subtitleText
+          'Add',
+          style: design.subtitleText
         ),
         centerTitle: true,
       ),
@@ -123,6 +176,16 @@ class _AddPageState extends State<AddPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
+            CategoryToggle(
+              isExpenseSelected: _isExpenseSelected,
+              onToggle: (bool selected) {
+                setState(() {
+                  _isExpenseSelected = selected;
+                  _selectedCategory = null;
+                });
+              },
+            ),
+            const SizedBox(height: 26),
             Align(
               alignment: Alignment.center,
               child: GridView.count(
@@ -130,8 +193,9 @@ class _AddPageState extends State<AddPage> {
                 shrinkWrap: true,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 2,
-                children: _categories.map((cat) {
+                children: currentCategories.map((cat) {
                   final isSelected = _selectedCategory == cat['value'];
+
                   return InkWell(
                     onTap: () => setState(() => _selectedCategory = cat['value']),
                     borderRadius: BorderRadius.circular(16),
@@ -147,19 +211,19 @@ class _AddPageState extends State<AddPage> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: isSelected
-                                  ? Colors.orange
-                                  : Colors.blue,
+                                ? Colors.orange
+                                : Colors.blue
                             ),
                             child: Icon(
-                                cat['icon'],
-                                color: Colors.white,
-                                size: 28
+                              cat['icon'],
+                              color: Colors.white,
+                              size: 28
                             ),
                           ),
                           const SizedBox(height: 5),
                           Text(
-                              cat['label'],
-                              style: design.labelTitle
+                            cat['label'],
+                            style: design.labelTitle
                           ),
                         ],
                       ),
@@ -169,7 +233,7 @@ class _AddPageState extends State<AddPage> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 26),
 
             Align(
               alignment: Alignment.center,
@@ -191,8 +255,6 @@ class _AddPageState extends State<AddPage> {
                         readOnly: true,
                         onTap: _pickDate,
                         decoration: InputDecoration(
-                          hintText: 'DD/MM/YYYY',
-                          hintStyle: design.detailText,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide.none,
@@ -200,6 +262,7 @@ class _AddPageState extends State<AddPage> {
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.all(12),
+                          suffixIcon: const Icon(Icons.keyboard_arrow_down, size: 30),
                         ),
                       ),
                     ),
@@ -237,20 +300,43 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    _buildFormRow(
+                      label: 'Note',
+                      child: TextField(
+                        controller: _noteController,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(12),
+                          hintText: 'Optional note...',
+                          hintStyle: design.captionText
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       height: 40,
                       child: ElevatedButton(
                         onPressed: _isFormValid
-                            ? _saveToFirebaseAndReturn
-                            : () {
+                          ? _saveToFirebaseAndReturn
+                          : () {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text("Missing Information"),
-                                content: const Text("Please fill out all fields before saving."),
+                                title: const Text(
+                                  "Missing Information"
+                                ),
+                                content: const Text(
+                                  "Please fill out all fields before saving."
+                                ),
                                 actions: [
                                   TextButton(
                                     child: const Text("OK"),
@@ -268,7 +354,9 @@ class _AddPageState extends State<AddPage> {
                           ),
                         ),
                         child: Text(
-                          'Save Transaction',
+                          widget.existingTransaction == null
+                            ? 'Save Transaction'
+                            : 'Update Transaction',
                           style: design.saveRecordText,
                         ),
                       ),
@@ -277,6 +365,7 @@ class _AddPageState extends State<AddPage> {
                 ),
               ),
             ),
+            const SizedBox(height: 26),
           ],
         ),
       ),
@@ -300,7 +389,7 @@ class _AddPageState extends State<AddPage> {
         ),
         Expanded(
           child: prefixText != null
-              ? Row(
+          ? Row(
             children: [
               Text(
                 prefixText,
@@ -310,7 +399,7 @@ class _AddPageState extends State<AddPage> {
               Expanded(child: child),
             ],
           )
-              : child,
+          : child,
         ),
       ],
     );
