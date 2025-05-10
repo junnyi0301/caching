@@ -64,20 +64,20 @@ class _GoalBlockState extends State<GoalBlock> {
     void topUpGoal() async {
       await _goalService.updateContribution(widget.goalID, double.parse(topUpCtrl.text));
       double currentTotal = widget.ttlSaveAmount + double.parse(topUpCtrl.text);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Contribution added successfully.'), backgroundColor: Colors.green[600]),
+      );
+
       if(currentTotal >= widget.targetAmt){
         await _goalService.updateGoalStatus(widget.goalID, "Completed");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('🎉 Congratulations! You earned 100 points for completing this goal.'),
-            backgroundColor: Colors.green[600],
+            backgroundColor: Colors.green[600]
           ),
         );
       }
-
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Contribution added successfully.')),
-      );
 
       reloadPage();
     }
@@ -144,7 +144,7 @@ class _GoalBlockState extends State<GoalBlock> {
     void delGoal() async{
       await _goalService.remGoal(widget.goalID);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Goal deleted successfully.')),
+        SnackBar(content: Text('Goal deleted successfully.'), backgroundColor: Colors.green[600]),
       );
       reloadPage();
     }

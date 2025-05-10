@@ -88,7 +88,8 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in the last item before adding a new one.')),
+        SnackBar(content: Text('Please fill in the last item before adding a new one.'),
+        backgroundColor: design.secondaryButton),
       );
     }
   }
@@ -179,12 +180,15 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
         if (granted) {
           // Permission granted
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Notification permission granted!")),
+            SnackBar(content: Text("Notification permission granted!"), backgroundColor: Colors.green[600]),
           );
         } else {
           // Still denied
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Notification permission still denied.")),
+            SnackBar(
+              content: Text("Notification permission still denied."),
+              backgroundColor: design.secondaryButton
+            ),
           );
         }
 
@@ -413,7 +417,8 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
 
                                 if (!itemCtrl.any((ctrl) => ctrl.text.trim().isNotEmpty)) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Please add at least one item to create checklist.')),
+                                    SnackBar(content: Text('Please add at least one item to create checklist.'),
+                                    backgroundColor: design.secondaryButton),
                                   );
                                   return;
                                 }
@@ -428,6 +433,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text("Reminder already executed. Please change the reminder date or cancel the reminder."),
+                                        backgroundColor: design.secondaryButton
                                       ),
                                     );
                                     return;
@@ -453,7 +459,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                   addChecklist();
 
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Checklist Created Successfully.')),
+                                    SnackBar(content: Text('Checklist Created Successfully.'), backgroundColor: Colors.green[600]),
                                   );
 
                                   Navigator.pop(context);
@@ -466,14 +472,14 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                     await waitFunc(widget.checklistID);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Checklist Updated Successfully.')),
+                                      SnackBar(content: Text('Checklist Updated Successfully.'), backgroundColor: Colors.green[600]),
                                     );
 
                                     Navigator.pop(context);
 
                                   }else{
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Please contain at least 1 item in checklist.')),
+                                      SnackBar(content: Text('Please contain at least 1 item in checklist.'), backgroundColor: design.secondaryButton),
                                     );
                                   }
 
@@ -496,7 +502,7 @@ class _CreateChecklistPageState extends State<CreateChecklistPage> with WidgetsB
                                 }
 
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Form validation failed. Please check your inputs.')),
+                                  SnackBar(content: Text('Form validation failed. Please check your inputs.'), backgroundColor: design.secondaryButton),
                                 );
                               }
                             },

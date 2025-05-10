@@ -482,7 +482,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             );
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Your scheduled payment amount cannot exceed your target amount.')),
+                              SnackBar(content: Text('Your scheduled payment amount cannot exceed your target amount.'), backgroundColor: design.secondaryButton,),
                             );
                           }else if(_duration <= 1){
 
@@ -507,7 +507,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                               SnackBar(content: Text(_commitment == "by Daily Amount"
                                   ?'Your duration to achieve the goal must be more than 1 day.'
                                   :'Your duration to achieve the goal must be more than 1 month.'
-                              )
+                              ),
+                              backgroundColor: design.secondaryButton
                               ),
                             );
                           }else{
@@ -526,7 +527,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             );
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Goal Created Successfully')),
+                              SnackBar(content: Text('Goal Created Successfully'), backgroundColor: Colors.green[600]),
                             );
 
                             Navigator.pop(context);
@@ -541,7 +542,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           );
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Goal Updated Successfully')),
+                            SnackBar(content: Text('Goal Updated Successfully'), backgroundColor: Colors.green[600]),
                           );
 
                           await waitFunc(widget.goalID);
@@ -573,7 +574,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         }
 
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Form validation failed. Please check your inputs.')),
+                          SnackBar(content: Text('Form validation failed. Please check your inputs.'), backgroundColor: design.secondaryButton),
                         );
                       }
                     },

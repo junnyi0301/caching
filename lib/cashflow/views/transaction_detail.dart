@@ -139,8 +139,9 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                           await TransactionService.deleteTransaction(tx.id!);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Transaction deleted successfully'),
+                                backgroundColor: Colors.green[600]
                               ),
                             );
                             Navigator.of(context).pop();

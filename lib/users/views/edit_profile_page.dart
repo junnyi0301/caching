@@ -126,12 +126,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       await _profileService.updateUserProfile(data);
 
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully')));
+          SnackBar(content: Text('Profile updated successfully'), backgroundColor: Colors.green[600]));
       Navigator.pop(context);
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')));
+          SnackBar(content: Text('Error: $e'), backgroundColor: design.secondaryButton,));
     }
   }
 

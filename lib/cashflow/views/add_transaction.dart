@@ -134,6 +134,7 @@ class _AddPageState extends State<AddPage> {
             ? 'Transaction recorded successfully'
             : 'Transaction updated successfully'
           ),
+          backgroundColor: Colors.green[600]
         ),
       );
     }

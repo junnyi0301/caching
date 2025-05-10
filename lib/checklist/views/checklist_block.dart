@@ -78,7 +78,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
       await _checklistService.remChecklist(widget.checklistID);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Checklist deleted successfully.')),
+        SnackBar(content: Text('Checklist deleted successfully.'), backgroundColor: Colors.green[600]),
       );
 
       reloadPage();
@@ -130,12 +130,12 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
           if (granted) {
             // Permission granted
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Notification permission granted!")),
+              SnackBar(content: Text("Notification permission granted!"), backgroundColor: Colors.green[600]),
             );
           } else {
             // Still denied
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Notification permission still denied.")),
+              SnackBar(content: Text("Notification permission still denied."), backgroundColor: design.secondaryButton),
             );
           }
 
@@ -192,7 +192,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
         await _checklistService.updateChecklistReminder(widget.checklistID);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reminder date updated successfully.')),
+          SnackBar(content: Text('Reminder date updated successfully.'), backgroundColor: Colors.green[600]),
         );
 
         reloadPage();
@@ -205,7 +205,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
         _existReminder = false;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reminder denied successfully.')),
+          SnackBar(content: Text('Reminder denied successfully.'), backgroundColor: Colors.green[600]),
         );
 
         reloadPage();
@@ -249,7 +249,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                         onTap: () {
                           if (_latestChecklistStatus == "Completed") {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('You cannot add reminder on completed checklist')),
+                              SnackBar(content: Text('You cannot add reminder on completed checklist'), backgroundColor: design.secondaryButton),
                             );
                           } else {
                             updateReminder();
@@ -357,7 +357,7 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
                   });
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Congratulation! You have completed ${widget.checklistTitle}!')),
+                    SnackBar(content: Text('Congratulation! You have completed ${widget.checklistTitle}!'), backgroundColor: Colors.green[600]),
                   );
                 }
               },
