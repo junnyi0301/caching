@@ -66,7 +66,14 @@ class _GoalBlockState extends State<GoalBlock> {
       double currentTotal = widget.ttlSaveAmount + double.parse(topUpCtrl.text);
       if(currentTotal >= widget.targetAmt){
         await _goalService.updateGoalStatus(widget.goalID, "Completed");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('🎉 Congratulations! You earned 100 points for completing this goal.'),
+            backgroundColor: Colors.green[600],
+          ),
+        );
       }
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Contribution added successfully.')),
