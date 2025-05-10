@@ -1,5 +1,6 @@
 // lib/views/add_transaction.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../services/transaction_service.dart';
@@ -290,6 +291,16 @@ class _AddPageState extends State<AddPage> {
                       child: TextField(
                         controller: _amountController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                          TextInputFormatter.withFunction((oldValue, newValue) {
+                            final newText = newValue.text;
+                            if ('.'.allMatches(newText).length > 1) {
+                              return oldValue;
+                            }
+                            return newValue;
+                          }),
+                        ],
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
