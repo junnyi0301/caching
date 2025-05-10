@@ -45,21 +45,5 @@ class ProfileService {
 
     await doc.set(map, SetOptions(merge: true));
   }
-
-  /// Add points to the current user’s profile
-  Future<void> addPoints(int pointsToAdd) async {
-    final docRef = _firestore.collection('Users').doc(_uid);
-
-    await _firestore.runTransaction((transaction) async {
-      final snapshot = await transaction.get(docRef);
-
-      if (!snapshot.exists) return;
-
-      final currentPoints = snapshot.data()?['points'] ?? 0;
-      transaction.update(docRef, {
-        'points': currentPoints + pointsToAdd,
-      });
-    });
-  }
 }
 

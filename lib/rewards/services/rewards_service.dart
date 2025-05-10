@@ -3,16 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:caching/rewards/model/voucher.dart';
 import 'package:caching/rewards/model/redeemed_voucher.dart';
-import 'package:caching/goal/services/goal_service.dart';
 
 class RewardService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Get current user's ID
   String? get _userId => _auth.currentUser?.uid;
 
-  /// Fetch current user's points
   Future<int> getUserPoints() async {
     final userId = _userId;
     if (userId == null) return 0;
@@ -29,7 +26,6 @@ class RewardService {
     return 0;
   }
 
-  /// Update current user's points
   Future<void> updateUserPoints(int newPoints) async {
     final userId = _userId;
     if (userId == null) return;
@@ -41,7 +37,6 @@ class RewardService {
     }
   }
 
-  /// Generate an 8-character coupon code
   String _generateCouponCode([int length = 8]) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rand = Random.secure();
@@ -79,8 +74,6 @@ class RewardService {
         'validUntil': voucher.validUntil,
         'used': false,
       });
-
-      // Deduct points
       await updateUserPoints(currentPoints - voucher.requiredPoints);
     } catch (e) {
       print("Error redeeming voucher: $e");
@@ -108,25 +101,5 @@ class RewardService {
       print("Error fetching redeemed vouchers: $e");
       return [];
     }
-  }
-
-  /// Static method to award points to users
-  static Future<void> awardPointsToUsers(List<String> userIDs, int points) async {
-    final batch = FirebaseFirestore.instance.batch();
-
-    for (String uid in userIDs) {
-      final userRef = FirebaseFirestore.instance.collection("Users").doc(uid);
-      final userDoc = await userRef.get();
-
-      if (userDoc.exists) {
-        int currentPoints = (userDoc["points"] ?? 0);
-        batch.update(userRef, {
-          "points": currentPoints + points,
-        });
-      }
-    }
-
-    // Commit the batch operation to update all users' points
-    await batch.commit();
   }
 }
