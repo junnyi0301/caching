@@ -76,6 +76,11 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
     void remChecklist() async{
       await _checklistService.remChecklist(widget.checklistID);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Checklist deleted successfully.')),
+      );
+
       reloadPage();
     }
 
@@ -267,9 +272,6 @@ class _ChecklistBlockState extends State<ChecklistBlock> with WidgetsBindingObse
 
                       IconButton(onPressed: (){
                         delChecklistDialog();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Checklist deleted successfully.')),
-                        );
                       }, icon: Icon(Icons.delete, color: Colors.red),),
                     ],
                   ),

@@ -67,6 +67,11 @@ class _GoalBlockState extends State<GoalBlock> {
       if(currentTotal >= widget.targetAmt){
         await _goalService.updateGoalStatus(widget.goalID, "Completed");
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Contribution added successfully.')),
+      );
+
       reloadPage();
     }
 
@@ -131,6 +136,9 @@ class _GoalBlockState extends State<GoalBlock> {
 
     void delGoal() async{
       await _goalService.remGoal(widget.goalID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Goal deleted successfully.')),
+      );
       reloadPage();
     }
 
@@ -296,9 +304,6 @@ class _GoalBlockState extends State<GoalBlock> {
                 ElevatedButton(
                   onPressed: (){
                     topUpDialog();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Contribution added successfully.')),
-                    );
                   },
                   child: Text("Contribute", style: design.contentText,),
                   style: ElevatedButton.styleFrom(
@@ -332,9 +337,7 @@ class _GoalBlockState extends State<GoalBlock> {
                 ElevatedButton(
                   onPressed: (){
                     delGoalDialog();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Goal deleted successfully.')),
-                    );
+
                   },
                   child: Text("Delete", style: design.contentText),
                   style: ElevatedButton.styleFrom(
