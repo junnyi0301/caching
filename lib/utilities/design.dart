@@ -21,4 +21,40 @@ class Design{
   final labelTitle = GoogleFonts.poppins(fontSize: 12);
   final saveRecordText = GoogleFonts.poppins(fontSize: 16, color: Colors.black);
   final formTitleText = GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500);
+
+  static const Map<String, Color> _categoryColors = {
+    'shops': Colors.blue,
+    'food': Colors.green,
+    'entertainment': Colors.orange,
+    'repairs': Colors.purple,
+    'health': Colors.red,
+    'travel': Colors.teal,
+    'transport': Colors.cyan,
+    'utility': Colors.pink,
+    'salary': Colors.blue,
+    'investments': Colors.green,
+    'bonus': Colors.orange,
+    'others': Colors.purple,
+  };
+
+  Color categoryColor(String category) {
+    return _categoryColors[category.toLowerCase()] ?? Colors.grey.shade400;
+  }
+
+  static const Map<String, IconData> _categoryIcons = {
+    'shops': Icons.shopping_cart,
+    'food': Icons.fastfood,
+    'entertainment': Icons.movie,
+    'repairs': Icons.build,
+    'health': Icons.health_and_safety,
+    'travel': Icons.card_travel,
+    'transport': Icons.directions_bus,
+    'utility': Icons.power,
+    'salary': Icons.monetization_on,
+    'investments': Icons.trending_up,
+    'bonus': Icons.card_giftcard,
+    'others': Icons.more_horiz,
+  };
+
+  IconData categoryIcon(String category) => _categoryIcons[category.toLowerCase()] ?? Icons.category;
 }
