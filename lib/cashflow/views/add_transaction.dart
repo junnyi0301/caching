@@ -54,6 +54,7 @@ class _AddPageState extends State<AddPage> {
 
     if (widget.existingTransaction != null) {
       final tx = widget.existingTransaction!;
+      _isExpenseSelected = tx.amount < 0 ? true : false;
       _dateController.text = DateFormat('dd/MM/yyyy').format(tx.timestamp);
       _methodController.text = tx.method;
       _amountController.text = tx.amount.abs().toStringAsFixed(2);
