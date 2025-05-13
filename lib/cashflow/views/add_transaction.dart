@@ -168,8 +168,10 @@ class _AddPageState extends State<AddPage> {
           ),
         ),
         title: Text(
-          'Add',
-          style: design.subtitleText
+            widget.existingTransaction == null
+                ? 'Add'
+                : 'Edit',
+            style: design.subtitleText
         ),
         centerTitle: true,
       ),

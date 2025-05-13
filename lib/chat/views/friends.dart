@@ -50,7 +50,8 @@ class _FriendsPageState extends State<FriendsPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFFB9D3FB),
-          title: Text("Friends", style: design.titleText),
+          centerTitle: true,
+          title: Text("Friends", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Color(0xFFE7EEFD),
         bottomNavigationBar: BottomNav(currentIndex: 3),
