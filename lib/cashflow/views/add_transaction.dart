@@ -1,4 +1,3 @@
-// lib/views/add_transaction.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +23,6 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
-  // Define categories with labels and icons
   final List<Map<String, dynamic>> _categories = [
     {'label': 'Shops', 'icon': Icons.shopping_cart, 'value': 'Shops'},
     {'label': 'Food', 'icon': Icons.fastfood, 'value': 'Food'},
@@ -85,7 +83,6 @@ class _AddPageState extends State<AddPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      // Display as DD/MM/YYYY
       _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       setState(() {});
     }
@@ -101,7 +98,6 @@ class _AddPageState extends State<AddPage> {
   Future<void> _saveToFirebaseAndReturn() async {
     if (!_isFormValid) return;
 
-    // Parse the displayed date string back into a DateTime
     final DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
 
     if (widget.existingTransaction == null) {
@@ -146,7 +142,6 @@ class _AddPageState extends State<AddPage> {
 
   @override
   Widget build(BuildContext context) {
-    //const double maxContentWidth = 360;
     return Scaffold(
       backgroundColor: const Color(0xFFE3F2FD),
       appBar: AppBar(
